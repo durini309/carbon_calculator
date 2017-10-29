@@ -1,0 +1,21 @@
+﻿body {
+    
+}
+
+.tab-upper-margin{
+    margin-top: 10px;
+}
+
+.input-upper-margin{
+    margin-top: 5px;
+}
+
+.calcular-button{
+    text-align: right;
+    margin-top: 10px;
+    margin-right: 0px;
+}
+
+.big-input-size {
+  max-width: 500px !important
+}

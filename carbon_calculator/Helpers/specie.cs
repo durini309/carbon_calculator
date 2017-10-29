@@ -7,6 +7,11 @@ namespace carbon_calculator.Helpers
 {
     public class Specie
     {
+        public Specie()
+        {
+            ground_index = new Dictionary<string, double>();
+        }
+
         /*
          * Attributes
          */
