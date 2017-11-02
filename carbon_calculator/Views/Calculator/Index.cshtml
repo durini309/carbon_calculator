@@ -5,67 +5,109 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(function () {
-            Highcharts.chart('container', {
-                title: {
-                    text: ''
-                },
-                subTitle: {
-                    text: ''
-                },
-                yAxis: {
+
+            String.prototype.format = function () {
+                var formatted = this;
+                for (var i = 0; i < arguments.length; i++) {
+                    var regexp = new RegExp('\\{' + i + '\\}', 'gi');
+                    formatted = formatted.replace(regexp, arguments[i]);
+                }
+                return formatted;
+            };
+
+            /**
+             * Función que convierte un serializedArray ({{name: key_1, value: x} ... , {name: key_n, value: y}}) a un 
+             * object key:Value ({key_1: value, ... key_n: value});
+             * return {object} objeto key:value
+             */
+            function convertSerializedArray(serializedArray) {
+                var newObject = {};
+                var actObj;
+                for (var i = 0; i < serializedArray.length; i++) {
+                    actObj = serializedArray[i];
+                    newObject[actObj.name] = actObj.value;
+                }
+                return newObject;
+            }
+
+            /**
+             * Método que crea el highchart basado en el vector que se le manda
+             * param {array} data : vector con datos calculados
+             */
+            function showGraph(data) {
+                Highcharts.chart('container', {
+
                     title: {
-                        text: 'Contenido de carbono'
-                    }
-                },
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                },
-
-                plotOptions: {
-                    series: {
-                        label: {
-                            connectorAllowed: false
-                        },
-                        pointStart: 2010
-                    }
-                },
-
-                series: [{
-                    name: 'Installation',
-                    data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-                }, {
-                    name: 'Manufacturing',
-                    data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
-                }, {
-                    name: 'Sales & Distribution',
-                    data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-                }, {
-                    name: 'Project Development',
-                    data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-                }, {
-                    name: 'Other',
-                    data: [12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111]
-                }],
-
-                responsive: {
-                    rules: [{
-                        condition: {
-                            maxWidth: 500
-                        },
-                        chartOptions: {
-                            legend: {
-                                layout: 'horizontal',
-                                align: 'center',
-                                verticalAlign: 'bottom'
-                            }
+                        text: ''
+                    },
+                    subTitle: {
+                        text: ''
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Contenido de carbono'
                         }
-                    }]
+                    },
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    },
+
+                    plotOptions: {
+                        series: {
+                            label: {
+                                connectorAllowed: false
+                            },
+                            pointStart: 1
+                        }
+                    },
+
+                    series: [data],
+
+                    responsive: {
+                        rules: [{
+                            condition: {
+                                maxWidth: 1000
+                            },
+                            chartOptions: {
+                                legend: {
+                                    layout: 'horizontal',
+                                    align: 'center',
+                                    verticalAlign: 'bottom'
+                                }
+                            }
+                        }]
+                    }
+
+                });
+            }
+
+            /**
+             * Función que, dependiendo el vector de parámetro, creará dinámicamente el contenido
+             * de la tabla. Creará header, el cual contendrá el # de año proyectado y el body, 
+             * el cual tendrá el valor calculado
+             * param {array} data : vector con datos calculados
+             * return {html} html que contendrá la tabla
+             */
+            function generateTable(data) {
+                var header  = '';
+                var content = '';
+                var actTh   = '';
+                var actTd   = '';
+                var finalTable = '<thead><tr>{0}</tr></thead><tbody><tr>{1}</tr></tbody>'
+                for (var i = 0; i < data.length; i++) {
+                    header += '<th style="text-align: center" nowrap>Año ' + (i + 1) + '</th>';
+                    content += '<td style="text-align: center">' + data[i] + '</td>';
                 }
 
-            });
+                return finalTable.format(header, content);
+            }
 
+            /**
+             * Evento del botón "Ver gráfica" en calculos proyectados, el cual mostrará
+             * gráfica del resultado
+             */
             $('#btnVerGrafica').click(function () {
                 $('#btnVerGrafica').addClass('active');
                 $('#btnVerDatos').removeClass('active');
@@ -74,6 +116,10 @@
                 $('#datos_proyectados').css('display', 'none');
             });
 
+            /**
+             * Evento del botón "Ver datos" en calculos proyectados, el cual mostrará
+             * tabla con valores de la gráfica
+             */
             $('#btnVerDatos').click(function () {
                 $('#btnVerDatos').addClass('active');
                 $('#btnVerGrafica').removeClass('active');
@@ -82,6 +128,83 @@
                 $('#grafica_proyectada').css('display', 'none');
 
             });
+
+            $('#btnResetFormActual').click(function () {
+                // Reinicia form y oculta resultado
+                $('#formCalculoActual')[0].reset();
+                $('#panelResultadoActual').css('display', 'none');
+            });
+
+            $('#btnResetFormProyectada').click(function () {
+                // Reinicia form y oculta resultado
+                $('#formCalculoProyectado')[0].reset();
+                $('#panelResultadoProyectado').css('display', 'none');
+            });
+
+            /**
+             * Submit del form de cálculo actual.
+             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego 
+             * mostrarlo en el panel de resultado
+             */
+            $('#formCalculoActual').submit(function (event) {
+                event.preventDefault();
+                var formData = convertSerializedArray($(this).serializeArray());
+                var postURL = '@Url.Action("calculoActual", "Calculator")';
+                $.ajax({
+                    url: postURL,
+                    method: "POST", 
+                    data: formData,
+                    success: function (data) {
+                        var status = data.status;
+
+                        // Llamada correcta, muestra resultado
+                        if (status == 200) {
+                            $('#panelResultadoActual').css('display', 'block');
+                            $('#lblResultado').html(data.response + " C");
+                        }
+                    },
+                    error: function (requestObject, error, errorThrown) {
+                        alert('Error en cálculo');
+                    }
+                });
+            });
+
+            /**
+             * Submit del form de cálculo proyectado.
+             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego 
+             * mostrarlo en el panel de resultado
+             */
+            $('#formCalculoProyectado').submit(function (event) {
+                event.preventDefault();
+                var formData = convertSerializedArray($(this).serializeArray());
+                var postURL = '@Url.Action("calculoProyectado", "Calculator")';
+                $.ajax({
+                    url: postURL,
+                    method: "POST",
+                    data: formData,
+                    success: function (data) {
+                        var status = data.status;
+
+                        // Llamada correcta, muestra resultado
+                        if (status == 200) {
+                            $('#panelResultadoProyectado').css('display', 'block');
+
+                            // Muestra gráfica
+                            showGraph({
+                                name: 'Carbono',
+                                data: data.response
+                            });
+
+                            // Genera tabla HTML
+                            $('#tablaProyectada').html(generateTable(data.response));
+                        }
+                    },
+                    error: function (requestObject, error, errorThrown) {
+                        alert('Error en cálculo');
+                    }
+                });
+            });
+
         })
     });
 </script>
@@ -96,127 +219,140 @@
 </ul>
 
 <div class="tab-content">
-    <div id="calc_actual" class="tab-pane fade in active"> <!-- Tab Cálculo actual-->
+    <!-- Tab Cálculo actual-->
+    <div id="calc_actual" class="tab-pane fade in active">
         
-        <div class="col-md-6 col-lg-6 tab-upper-margin"> <!-- Ingresos -->
+        <!-- Ingresos -->
+        <div class="col-md-6 col-lg-6 tab-upper-margin"> 
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Ingresos</h3>
                 </div>
                 <div class="panel-body">
-                    <form>
+                    @using (Html.BeginForm("calculoActual", "Calculator", FormMethod.Post, new { id = "formCalculoActual" }))
+                    {
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="sel_especie">Especie</label>
-                                <select class="form-control" id="sel_especie">
-                                    <option>Especie 1</option>
-                                    <option>Especie 2</option>
-                                    <option>Especie 3</option>
-                                    <option>Especie 4</option>
-                                    <option>Especie 5</option>
+                                <select class="form-control" id="sel_especie" name="especie">
+                                    <option>Pinus Maximinoii</option>
+                                    <option>Pinus Caribea</option>
+                                    <option>Pinus oocarpa</option>
+                                    <option>Teca</option>
+                                    <option>Palo Blanco</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="#txtDAP">DAP</label>
-                                <input id="txtDAP" type="number" class="form-control" placeholder="100 m">
+                                <input id="txtDAP" name="dap" type="number" class="form-control" placeholder="100 m" min="0" step="any" required>
                             </div>
                         </div>
 
                         <div class="row input-upper-margin">
                             <div class="col-md-6">
                                 <label for="txtNumero">Número de árboles</label>
-                                <input id="txtNumero" type="number" class="form-control" placeholder="50">
+                                <input id="txtNumero" name="numArboles" type="number" class="form-control" placeholder="50" min="0" step="1" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="txtAltura">Altura media</label>
-                                <input id="txtAltura" type="number" class="form-control" placeholder="100 m">
+                                <input id="txtAltura" name="altura" type="number" class="form-control" placeholder="100 m" min="0" step="any" required>
                             </div>
                         </div>
 
                         <div class="row input-upper-margin">
                             <div class="col-md-6">
-                                <label for="txtCoefForma">Coeficiente de forma</label>
-                                <input id="txtCoefForma" type="number" class="form-control" placeholder="0.50" min="0" max="1">
+                                <label for="txtMateriaSeca">% Materia seca</label>
+                                <input id="txtMateriaSeca" name="ms" type="number" class="form-control" placeholder="0.50" min="0" max="1" step="any" required>
                             </div>
                         </div>
 
                         <div class="row calcular-button">
                             <button type="submit" class="btn btn-primary">Calcular</button>
-                            <button type="reset" class="btn btn-danger">Reiniciar</button>
+                            <button id="btnResetFormActual" type="reset" class="btn btn-danger">Reiniciar</button>
                         </div>
-                    </form>
+                    }
                 </div>
             </div>
-        </div> <!-- /Ingresos -->
+        </div> 
+        <!-- /Ingresos -->
 
-        <div class="col-md-6 col-lg-6 tab-upper-margin"> <!-- Resultado -->
+        <!-- Resultado -->
+        <div id="panelResultadoActual" class="col-md-6 col-lg-6 tab-upper-margin" hidden>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Resultado</h3>
                 </div>
                 <div class="panel-body">
-                    <b>El contenido de carbono es de: </b> 10 tukis
+                    <b>El contenido de carbono es de: </b> <label id="lblResultado" style="font-weight:normal">10 tulis</label>
                 </div>
             </div>
             <div class="alert alert-info">
                 <strong>Atención</strong> si desea ver cómo se realizó este cálculo, entrar <a href="#" class="alert-link"> aquí </a>
             </div>
-        </div> <!-- /Resultado -->
+        </div> 
+        <!-- /Resultado -->
 
-    </div> <!-- Tab Cálculo actual-->
+    </div> 
+    <!-- /Tab Cálculo actual-->
 
-    <div id="calc_proyeccion" class="tab-pane fade"> <!-- /Tab Cálculo proyectado-->
+    <!-- Tab Cálculo proyectado-->
+    <div id="calc_proyeccion" class="tab-pane fade"> 
         <div class="col-md-5 col-lg-5 tab-upper-margin">
+            
             <!-- Ingresos -->
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Ingresos</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="sel_especie">Especie</label>
-                            <select class="form-control" id="sel_especie">
-                                <option>Especie 1</option>
-                                <option>Especie 2</option>
-                                <option>Especie 3</option>
-                                <option>Especie 4</option>
-                                <option>Especie 5</option>
-                            </select>
+                    @using (Html.BeginForm("calculoProyectado", "Calculator", FormMethod.Post, new { id = "formCalculoProyectado" }))
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="sel_especie">Especie</label>
+                                <select class="form-control" id="sel_especie" name="especie">
+                                    <option>Pinus Maximinoii</option>
+                                    <option>Pinus Caribea</option>
+                                    <option>Pinus oocarpa</option>
+                                    <option>Teca</option>
+                                    <option>Palo Blanco</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="sel_sitio">Índice de sitio</label>
+                                <select class="form-control big-input-size" id="sel_sitio" name="indice_sitio">
+                                    <option>Pésimo</option>
+                                    <option>Malo</option>
+                                    <option>Medio</option>
+                                    <option>Bueno</option>
+                                    <option>Excelente</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="sel_sitio">Índice de sitio</label>
-                            <select class="form-control big-input-size" id="sel_sitio">
-                                <option>Pésimo</option>
-                                <option>Malo</option>
-                                <option>Medio</option>
-                                <option>Bueno</option>
-                                <option>Excelente</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <div class="row input-upper-margin">
-                        <div class="col-md-6">
-                            <label for="txtEdad">Edad</label>
-                            <input id="txtNumero" type="number" class="form-control big-input-size" placeholder="15 años">
+                        <div class="row input-upper-margin">
+                            <div class="col-md-6">
+                                <label for="txtMateriaSeca2">% Materia seca</label>
+                                <input id="txtMateriaSeca2" name="ms" type="number" class="form-control" placeholder="0.50" min="0" max="1" step="any" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="txtAltura">Número de árboles</label>
+                                <input id="txtAltura" name="numArboles" type="number" class="form-control big-input-size" placeholder="5" min="0" required>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="txtAltura">Número de árboles</label>
-                            <input id="txtAltura" type="number" class="form-control big-input-size" placeholder="5">
-                        </div>
-                    </div>
 
-                    <div class="row calcular-button">
-                        <button type="submit" class="btn btn-primary">Calcular</button>
-                        <button type="reset" class="btn btn-danger">Reiniciar</button>
-                    </div>                
+                        <div class="row calcular-button">
+                            <button type="submit" class="btn btn-primary">Calcular</button>
+                            <button id="btnResetFormProyectada" type="reset" class="btn btn-danger">Reiniciar</button>
+                        </div>  
+                    }
                 </div>
             </div>
-        </div> <!-- /Ingresos -->
+        </div> 
+        <!-- /Ingresos -->
 
-        <div class="col-md-7 col-lg-7 tab-upper-margin">
-            <!-- Resultado -->
+        <!-- Resultado -->
+        <div id="panelResultadoProyectado" class="col-md-7 col-lg-7 tab-upper-margin" hidden>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Resultado</h3>
@@ -233,25 +369,13 @@
                         </div>
                     </div>
                     <div id="grafica_proyectada">
-                        <div id="container" style="width:100%; height:400px; margin-bottom: 15px;" ></div>
+                        <div id="container" style="width:100%; height:400px; margin-bottom: 15px;"></div>
                     </div>
-                    <div class="row" style="margin: 5px;" id="datos_proyectados" hidden>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Año 1</th>
-                                    <th>Año 2</th>
-                                    <th>Año 3</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>100</td>
-                                    <td>200</td>
-                                    <td>300</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="row" style="margin: 5px; text-align:center;" id="datos_proyectados" hidden>
+                        <h4>Contenido de carbono por año</h4>
+                        <div style="overflow-x: auto">
+                            <table id="tablaProyectada" class="table table-bordered"></table>
+                        </div>
                     </div>
                     
                 </div>
@@ -259,10 +383,9 @@
             <div class="alert alert-info">
                 Si desea ver cómo se realizó este cálculo, entrar <a href="#" class="alert-link"> aquí </a>
             </div>
-        </div> <!-- /Resultado -->
-    </div> <!-- /Tab Cálculo proyectado-->
-    <div id="menu2" class="tab-pane fade">
-        <h3>Menu 2</h3>
-        <p>Some content in menu 2.</p>
+        </div>
+        <!-- /Resultado -->
+    
     </div>
+    <!-- /Tab Cálculo proyectado-->
 </div>
