@@ -32,6 +32,8 @@ namespace carbon_calculator.Helpers
 
         public double coef_forma { get; set; }
 
+        public double materia_seca { get; set; }
+
         public int limit_year { get; set; }
 
         protected Dictionary<string, double> ground_index;
