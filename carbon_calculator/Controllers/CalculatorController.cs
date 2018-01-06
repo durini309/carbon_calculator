@@ -5,13 +5,13 @@ using System.Web;
 using System.Web.Mvc;
 using carbon_calculator.Helpers;
 using System.Web.Services;
+using System.Web.Script.Serialization;
 
 namespace carbon_calculator.Controllers
 {
     public class CalculatorController : Controller
     {
         private const double CMS = 0.5;
-
 
         // GET: Calculator
         public ActionResult Index()
@@ -175,13 +175,14 @@ namespace carbon_calculator.Controllers
         /// TODO: raleos
         /// </summary>
         /// <returns></returns>
-        private double[] projectedCarbon(string especie, string indiceSitio, int numArboles)
+        private double[] projectedCarbon(string especie, string indiceSitio, int numArboles, int years)
         {
             Specie current_specie = getSpecie(especie);
             double current_ground = current_specie.getGroundIndex(indiceSitio);
             double ms = current_specie.materia_seca;
-            double[] response = new double[current_specie.limit_year];
-            for (int year = 1; year <= current_specie.limit_year; year++)
+            double[] response = new double[years + 1];
+            
+            for (int year = 1; year <= years; year++)
             {
                 double total_vol = Math.Exp(
                     current_specie.coef_one +
@@ -189,11 +190,45 @@ namespace carbon_calculator.Controllers
                     (current_specie.coef_three * current_ground) +
                     (current_specie.coef_four * numArboles));
 
-                response[year - 1] = Math.Round(totalCarbon(total_vol, ms), 8);
-                //response.Add(new double[] {
-                //        total_vol,
-                //        total_carbon(total_vol, 5)
-                //});
+                response[year] = Math.Round(totalCarbon(total_vol, ms), 8);
+            }
+
+            return response;
+        }
+
+        private List<double[,]> projectedCarbonRaleos(string especie, string indiceSitio, int numArboles, int years, Dictionary<string, string> raleo)
+        {
+            double aux_raleo = 0;
+            Specie current_specie = getSpecie(especie);
+            double current_ground = current_specie.getGroundIndex(indiceSitio);
+            double ms = current_specie.materia_seca;
+            List <double[,]> response = new List<double[,]>();
+
+            response.Add(new double[1, 2] { { 0, 0 } });
+
+            for (int year = 1; year <= years; year++)
+            {
+                double total_vol = Math.Exp(
+                    current_specie.coef_one +
+                    (current_specie.coef_two / year) +
+                    (current_specie.coef_three * current_ground) +
+                    (current_specie.coef_four * numArboles));
+
+                response.Add(new double[1, 2] { { year, Math.Round(totalCarbon(total_vol, ms), 8) } });
+
+                if (raleo.ContainsKey(year.ToString()) && raleo[year.ToString()] != "")
+                {
+                    aux_raleo = numArboles * Convert.ToDouble(double.Parse(raleo[year.ToString()]) / 100);
+                    numArboles -= Convert.ToInt16(aux_raleo);
+
+                    total_vol = Math.Exp(
+                        current_specie.coef_one +
+                        (current_specie.coef_two / year) +
+                        (current_specie.coef_three * current_ground) +
+                        (current_specie.coef_four * numArboles));
+
+                    response.Add(new double[1, 2] { { year, Math.Round(totalCarbon(total_vol, ms), 8) } });
+                }
             }
 
             return response;
@@ -224,21 +259,35 @@ namespace carbon_calculator.Controllers
         }
 
         [HttpPost]
-        public ActionResult calculoProyectado(string especie, string indice_sitio, int numArboles)
+        public ActionResult calculoProyectado(string especie, string indice_sitio, string ms, int numArboles, string raleo)
         {
-            // Lógica del cálculo
-            double[] data = projectedCarbon(especie, indice_sitio, numArboles);
-            return Json(new{
-                status = "200",
-                response = data
-            });
+            /* Calculo proyectado con raleos */
+            if(!(raleo == "{}"))
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                return Json(new
+                {
+                    status = "200",
+                    response = projectedCarbonRaleos(especie, indice_sitio, numArboles, int.Parse(ms), serializer.Deserialize<Dictionary<string, string>>(raleo))
+                });
+            }
+            /* Calculo proyecto sin raleos */
+            else
+            {
+                double[] data = projectedCarbon(especie, indice_sitio, numArboles, int.Parse(ms));
+                return Json(new
+                {
+                    status = "200",
+                    response = data
+                });
+            }
         }
 
         /**
           * TODO: 
           *     - cantidad de vida de especies que sea un input
           *     - Raleo
-          *     - HOja de cómo se calculó todo
+          *     - Hoja de cómo se calculó todo
           *     - % materia seca que sea input (por confirmar)
           */
 

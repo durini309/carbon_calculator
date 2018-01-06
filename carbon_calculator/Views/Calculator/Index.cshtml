@@ -123,16 +123,19 @@
                     text: "Sin Raleo"
                 }));
 
+                var count_years = 1;
                 // Agrega <option> según cantidad de años
                 for (var i = firstYear; i < lastYear; i++) {
                     $('#sel_raleo1').append($('<option>', {
-                        value: i,
+                        value: count_years,
                         text: i.toString()
                     }));
                     $('#sel_raleo2').append($('<option>', {
-                        value: i,
+                        value: count_years,
                         text: i.toString()
                     }));
+
+                    count_years++;
                 }
             }
 
@@ -291,7 +294,7 @@
                     delete formData['sel_raleo2'];
 
                     // Agreba objeto de raleo a campos del Form
-                    formData['raleo'] = raleo;
+                    formData['raleo'] = JSON.stringify(raleo);
                 } else {
                     alert('Debe seleccionar años diferentes')
                 }
@@ -388,7 +391,7 @@
                         <div class="row input-upper-margin">
                             <div class="col-md-6">
                                 <label for="txtYears">Años de proyección</label>
-                                <input id="txtYears" name="ms" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" required>
+                                <input id="txtYears" name="years" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" required>
                             </div>
                         </div>
 
