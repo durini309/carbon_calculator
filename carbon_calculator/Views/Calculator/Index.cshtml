@@ -61,7 +61,13 @@
                             label: {
                                 connectorAllowed: false
                             },
-                            pointStart: 1
+                            pointStart: 1,
+                            marker: {
+                                enabled: true,
+                                fillColor: '#FFFFFF',
+                                lineWidth: 2,
+                                lineColor: null // inherit from series
+                            }
                         }
                     },
 
@@ -102,6 +108,35 @@
                     header += '<th style="text-align: center" nowrap>Año ' + (i + 1) + '</th>';
                     content += '<td style="text-align: center">' + data[i] + '</td>';
                 }
+
+                return finalTable.format(header, content);
+            }
+
+            /**
+             * 
+             * @param data
+             */
+            function generateTableProjected(data) {
+                var header = '';
+                var content = '';
+                var actTh = '';
+                var actTd = '';
+                var actData = [];
+                var actYear;
+                var finalTable = '<thead><tr>{0}</tr></thead><tbody><tr>{1}</tr></tbody>'
+                // Recorre resultados y crea un array con #año como key y value la proyección de carbono
+                for (var i = 0; i < data.length; i++) {
+                    actYear = data[i][0];
+                    if (actData[actYear] == null) {
+                        actData[actYear] = [];
+                    } 
+                    actData[actYear].push(data[i][1]);
+                }
+                
+                actData.forEach(function (element, index, array) {
+                    header += '<th style="text-align: center" nowrap>Año ' + (index + 1) + '</th>';
+                    content += '<td style="text-align: center">' + element.toString() + '</td>';
+                });
 
                 return finalTable.format(header, content);
             }
@@ -314,7 +349,7 @@
                             // Llamada correcta, muestra resultado
                             if (status == 200) {
                                 $('#panelResultadoProyectado').css('display', 'block');
-                                console.log(data);
+
                                 // Muestra gráfica
                                 showGraph({
                                     name: 'Carbono',
@@ -322,7 +357,7 @@
                                 });
 
                                 // Genera tabla HTML
-                                $('#tablaProyectada').html(generateTable(data.response));
+                                $('#tablaProyectada').html(generateTableProjected(data.response));
                             }
                         },
                         error: function (requestObject, error, errorThrown) {
