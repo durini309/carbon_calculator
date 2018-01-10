@@ -6,7 +6,7 @@
     $(document).ready(function () {
         $(function () {
 
-            const SUMA_RALEOS = 25;
+            const SUMA_RALEOS = 100;
 
             String.prototype.format = function () {
                 var formatted = this;
@@ -47,7 +47,7 @@
                     },
                     yAxis: {
                         title: {
-                            text: 'Unidades de carbono'
+                            text: 'Toneladas de Carbono'
                         }
                     },
                     legend: {
@@ -112,10 +112,6 @@
                 return finalTable.format(header, content);
             }
 
-            /**
-             * 
-             * @param data
-             */
             function generateTableProjected(data) {
                 var header = '';
                 var content = '';
@@ -284,7 +280,7 @@
                         // Llamada correcta, muestra resultado
                         if (status == 200) {
                             $('#panelResultadoActual').css('display', 'block');
-                            $('#lblResultado').html(data.response + " unidades de carbono");
+                            $('#lblResultado').html(data.response + " Toneladas de Carbono");
                         }
                     },
                     error: function (requestObject, error, errorThrown) {
@@ -312,14 +308,27 @@
                     // Si la opción de raleos está seleccionada, obtiene sus valores
                     if ($('#checkRaleo').prop('checked')) {
 
-                        raleo[formData.sel_raleo1] = formData.pct1;
-                        // Si sí hay raleo, agrega propiedad a objeto
-                        if (formData.sel_raleo2 !== "0") {
-                            raleo[formData.sel_raleo2] = formData.pct2;
-                            sumaRaleo = parseInt(raleo[formData.sel_raleo1]) + parseInt(raleo[formData.sel_raleo2]);
-                        } else
-                            sumaRaleo = parseInt(raleo[formData.sel_raleo1]);
+                        if (formData.pct1 > 0 && formData.pct1 <= 50) {
 
+                            raleo[formData.sel_raleo1] = formData.pct1;
+                            // Si sí hay raleo, agrega propiedad a objeto
+                            if (formData.sel_raleo2 !== "0") {
+
+                                if (formData.pct2 > 0 && formData.pct2 <= 50) {
+
+                                    raleo[formData.sel_raleo2] = formData.pct2;
+                                    sumaRaleo = parseInt(raleo[formData.sel_raleo1]) + parseInt(raleo[formData.sel_raleo2]);
+                                }
+                                else {
+                                    alert("Raleos deben ser menor o igual a 50%");
+                                }
+
+                            } else
+                                sumaRaleo = parseInt(raleo[formData.sel_raleo1]);
+                        }
+                        else {
+                            alert("Raleos deben ser menor o igual a 50%");
+                        }
                     }
 
                     // Elimina campos de raleo del Form
@@ -333,8 +342,6 @@
                 } else {
                     alert('Debe seleccionar años diferentes')
                 }
-
-                console.log(formData);
 
                 // Verifica que la suma de raleos esté correcta
                 if (sumaRaleo <= SUMA_RALEOS) {
@@ -365,7 +372,7 @@
                         }
                     });
                 } else {
-                    alert("La suma de los raleos debe ser menor o igual al 25%");
+                    alert("La suma de los raleos debe ser menor o igual al 100%");
                 }
             });
 
@@ -422,14 +429,6 @@
                                 <input id="txtAltura" name="altura" type="number" class="form-control big-input-size" placeholder="10 m" min="0" step="any" autocomplete="off" required>
                             </div>
                         </div>
-
-                        <div class="row input-upper-margin">
-                            <div class="col-md-6">
-                                <label for="txtYears">Años de proyección</label>
-                                <input id="txtYears" name="years" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" required>
-                            </div>
-                        </div>
-
                         <div class="row calcular-button">
                             <button type="submit" class="btn btn-primary">Calcular</button>
                             <button id="btnResetFormActual" type="reset" class="btn btn-danger">Reiniciar</button>
@@ -515,7 +514,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="pct1">% primer raleo</label>
-                                <input id="pct1" name="pct1" type="number" class="form-control big-input-size" placeholder="15" min="0" max="25" step="any" autocomplete="off">
+                                <input id="pct1" name="pct1" type="number" class="form-control big-input-size" placeholder="15" min="0" max="50" step="any" autocomplete="off">
                             </div>
                         </div>
                         <div class="row input-upper-margin">
@@ -526,10 +525,10 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="pct2">% segundo raleo</label>
-                                <input id="pct2" name="pct2" type="number" class="form-control big-input-size" placeholder="10" min="0" max="25" step="any" autocomplete="off">
+                                <input id="pct2" name="pct2" type="number" class="form-control big-input-size" placeholder="10" min="0" max="50" step="any" autocomplete="off">
                             </div>
                         </div>
-                        <p class="raleo-info">El porcentaje total no puede exceder del 25%</p>
+                        <p class="raleo-info">El porcentaje total no puede exceder del 100%</p>
                     </div>
                 </div>
 
