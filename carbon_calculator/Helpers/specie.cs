@@ -10,25 +10,25 @@ namespace carbon_calculator.Helpers
         public Specie()
         {
             ground_index = new Dictionary<string, double>();
+            coefs_height = new double[1];
+            coefs_dap = new double[4];
+            coefs_area = new double[4];
+            coefs_volumen = new double[4];
         }
-
-        /*
-         * Attributes
-         */
-
+        
         public string tree_code { get; set; }
 
         public string name { get; set; }
 
         public string fancy_name { get; set; }
 
-        public double coef_one { get; set; }
+        public double[] coefs_height { get; set; }
 
-        public double coef_two { get; set; }
+        public double[] coefs_dap { get; set; }
 
-        public double coef_three { get; set; }
+        public double[] coefs_area { get; set; }
 
-        public double coef_four { get; set; }
+        public double[] coefs_volumen { get; set; }
 
         public double coef_forma { get; set; }
 
