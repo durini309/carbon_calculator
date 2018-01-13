@@ -6,7 +6,12 @@
     $(document).ready(function () {
         $(function () {
 
-            const SUMA_RALEOS = 100;
+            const SUMA_RALEOS  = 100;
+            const GRAPH_CARBON = 1;
+            const GRAPH_AREA   = 2;
+            const GRAPH_DAP    = 3;
+            const GRAPH_HEIGHT = 4;
+            const GRAPGH_VOL   = 5;
 
             String.prototype.format = function () {
                 var formatted = this;
@@ -34,10 +39,11 @@
 
             /**
              * Método que crea el highchart basado en el vector que se le manda
-             * param {array} data : vector con datos calculados
+             * param {array} values : vector con datos calculados
              */
-            function showGraph(data) {
-                Highcharts.chart('container', {
+            function showGraph(values, graph) {
+
+                Highcharts.chart('graph_carbono', {
 
                     title: {
                         text: ''
@@ -45,33 +51,53 @@
                     subTitle: {
                         text: ''
                     },
+                    chart: {
+                        zoomType: 'x'
+                    },
                     yAxis: {
                         title: {
-                            text: 'Toneladas de Carbono'
+                            text: getGraphMeasure(graph)
                         }
                     },
+                    xAxis: {
+                        title: {
+                            text: 'Año'
+                        }, 
+                    }, 
                     legend: {
                         layout: 'horizontal',
                         align: 'center',
                         verticalAlign: 'bottom'
                     },
-
                     plotOptions: {
                         series: {
                             label: {
-                                connectorAllowed: false
+                                connectorAllowed: true
                             },
-                            pointStart: 1,
+
                             marker: {
                                 enabled: true,
                                 fillColor: '#FFFFFF',
                                 lineWidth: 2,
                                 lineColor: null // inherit from series
-                            }
+                            }, 
+
+                            color: getGraphColor(graph)
+                        }, 
+
+                        line: {
+                            dataLabels: {
+                                enabled: true,
+                                    format: "{point.y:.6f}"
+                            },
+                            enableMouseTracking: false
                         }
                     },
 
-                    series: [data],
+                    series: [{
+                        showInLegend: false,
+                        data: values
+                    }],
 
                     responsive: {
                         rules: [{
@@ -89,6 +115,28 @@
                     }
 
                 });
+            }
+
+            function getGraphMeasure(graph) {
+                switch (graph) {
+                    case GRAPH_CARBON: return "Toneladas de carbono";
+                    case GRAPH_AREA: return "Metros cuadrados";
+                    case GRAPH_DAP: return "DAPs";
+                    case GRAPH_HEIGHT: return "Metros";
+                    case GRAPGH_VOL: return "Metros cúbicos";
+                    default: return "";
+                }
+            }
+
+            function getGraphColor(graph) {
+                switch (graph) {
+                    case GRAPH_CARBON: return "#90CAF9";
+                    case GRAPH_AREA: return "#F48FB1";
+                    case GRAPH_DAP: return "#EF9A9A";
+                    case GRAPH_HEIGHT: return "#80CBC4";
+                    case GRAPGH_VOL: return "#BDBDBD";
+                    default: return "#546E7A";
+                }
             }
 
             /**
@@ -113,6 +161,7 @@
             }
 
             function generateTableProjected(data) {
+                console.log(data);
                 var header = '';
                 var content = '';
                 var actTh = '';
@@ -128,7 +177,7 @@
                     } 
                     actData[actYear].push(data[i][1]);
                 }
-                
+                console.log(actData);
                 actData.forEach(function (element, index, array) {
                     header += '<th style="text-align: center" nowrap>Año ' + (index + 1) + '</th>';
                     content += '<td style="text-align: center">' + element.toString() + '</td>';
@@ -188,8 +237,8 @@
                 $('#btnVerGrafica').addClass('active');
                 $('#btnVerDatos').removeClass('active');
 
-                $('#grafica_proyectada').css('display', 'block');
-                $('#datos_proyectados').css('display', 'none');
+                $('#graph_carbono').css('display', 'block');
+                $('#data_carbono').css('display', 'none');
             });
 
             /**
@@ -200,8 +249,8 @@
                 $('#btnVerDatos').addClass('active');
                 $('#btnVerGrafica').removeClass('active');
 
-                $('#datos_proyectados').css('display', 'block');
-                $('#grafica_proyectada').css('display', 'none');
+                $('#data_carbono').css('display', 'block');
+                $('#graph_carbono').css('display', 'none');
 
             });
 
@@ -352,19 +401,20 @@
                         data: formData,
                         success: function (data) {
                             var status = data.status;
-
+                            var values = data.response;
                             // Llamada correcta, muestra resultado
                             if (status == 200) {
+                                console.log(values.carbon);  
                                 $('#panelResultadoProyectado').css('display', 'block');
 
                                 // Muestra gráfica
-                                showGraph({
-                                    name: 'Carbono',
-                                    data: data.response
-                                });
-
-                                // Genera tabla HTML
-                                $('#tablaProyectada').html(generateTableProjected(data.response));
+                                showGraph(values.carbon, GRAPH_CARBON);
+                                if ($('#checkRaleo').prop('checked')) {
+                                    // Genera tabla HTML
+                                    $('#tablaProyectada').html(generateTableProjected(values.carbon));
+                                } else {
+                                    $('#tablaProyectada').html(generateTable(values.carbon));
+                                }
                             }
                         },
                         error: function (requestObject, error, errorThrown) {
@@ -553,27 +603,35 @@
                     <h3 class="panel-title">Resultado</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="row" style="margin-right: 5px">
-                        <div class="btn-group btn-group-xs pull-right">
-                            <button type="button" class="active btn btn-default" id="btnVerGrafica">
-                                Ver gráfica
-                            </button>
-                            <button type="button" class="btn btn-default" id="btnVerDatos">
-                                Ver datos
-                            </button>
+
+                        <div class="tab-content" style="margin-top: 10px;">
+                            <div class="tab-pane active" id="tab_1">
+
+                                <div class="row" style="margin-right: 5px">
+                                    <div class="btn-group btn-group-xs pull-right">
+                                        <button type="button" class="active btn btn-default" id="btnVerGrafica">
+                                            Gráfica
+                                        </button>
+                                        <button type="button" class="btn btn-default" id="btnVerDatos">
+                                            Datos
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="graph_carbono" style="width:100%; height:400px; margin-bottom: 15px;"></div>
+                                <div id="data_carbono" class="row" style="margin: 5px; text-align:center;" hidden>
+                                    <h4>Contenido de carbono por año</h4>
+                                    <div style="overflow-x: auto">
+                                        <table id="tablaProyectada" class="table table-bordered"></table>
+                                    </div>
+                                </div>
+
+                            </div>
+
                         </div>
+                        <!-- /.tab-content -->
+
+
                     </div>
-                    <div id="grafica_proyectada">
-                        <div id="container" style="width:100%; height:400px; margin-bottom: 15px;"></div>
-                    </div>
-                    <div class="row" style="margin: 5px; text-align:center;" id="datos_proyectados" hidden>
-                        <h4>Contenido de carbono por año</h4>
-                        <div style="overflow-x: auto">
-                            <table id="tablaProyectada" class="table table-bordered"></table>
-                        </div>
-                    </div>
-                    
-                </div>
             </div>
             <div class="alert alert-info">
                 Si desea ver cómo se realizó este cálculo, entrar <a href="#" class="alert-link"> aquí </a>
