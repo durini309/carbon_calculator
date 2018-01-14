@@ -11,7 +11,15 @@
             const GRAPH_AREA   = 2;
             const GRAPH_DAP    = 3;
             const GRAPH_HEIGHT = 4;
-            const GRAPGH_VOL   = 5;
+            const GRAPH_VOL   = 5;
+
+            var datos_carbono,
+                datos_area,
+                datos_dap,
+                datos_volumen,
+                datos_altura;
+
+            var chart;
 
             String.prototype.format = function () {
                 var formatted = this;
@@ -38,103 +46,119 @@
             }
 
             /**
-             * Método que crea el highchart basado en el vector que se le manda
+             * Método que crea el highchart basado en el vector y ID que se le manda
              * param {array} values : vector con datos calculados
+             * param {int} graph: ID de gráfica a mostrar
              */
             function showGraph(values, graph) {
+                // Si ya existe la gráfica, solo modifica datos, color y titulo
+                if (typeof chart != "undefined") {
+                    chart.series[0].setData(values);
+                    chart.series[0].options.color = getGraphColor(graph);
+                    chart.series[0].update(chart.series[0].options);
+                    chart.setTitle({ text: getGraphMeasure(graph) });
+                } else {
+                    chart = new Highcharts.Chart('graph-result', {
 
-                Highcharts.chart('graph_carbono', {
-
-                    title: {
-                        text: ''
-                    },
-                    subTitle: {
-                        text: ''
-                    },
-                    chart: {
-                        zoomType: 'x'
-                    },
-                    yAxis: {
                         title: {
                             text: getGraphMeasure(graph)
-                        }
-                    },
-                    xAxis: {
-                        title: {
-                            text: 'Año'
-                        }, 
-                    }, 
-                    legend: {
-                        layout: 'horizontal',
-                        align: 'center',
-                        verticalAlign: 'bottom'
-                    },
-                    plotOptions: {
-                        series: {
-                            label: {
-                                connectorAllowed: true
-                            },
-
-                            marker: {
-                                enabled: true,
-                                fillColor: '#FFFFFF',
-                                lineWidth: 2,
-                                lineColor: null // inherit from series
-                            }, 
-
-                            color: getGraphColor(graph)
-                        }, 
-
-                        line: {
-                            dataLabels: {
-                                enabled: true,
-                                    format: "{point.y:.6f}"
-                            },
-                            enableMouseTracking: false
-                        }
-                    },
-
-                    series: [{
-                        showInLegend: false,
-                        data: values
-                    }],
-
-                    responsive: {
-                        rules: [{
-                            condition: {
-                                maxWidth: 1000
-                            },
-                            chartOptions: {
-                                legend: {
-                                    layout: 'horizontal',
-                                    align: 'center',
-                                    verticalAlign: 'bottom'
-                                }
+                        },
+                        subTitle: {
+                            text: ''
+                        },
+                        chart: {
+                            zoomType: 'x'
+                        },
+                        yAxis: {
+                            title: {
+                                text: null
                             }
-                        }]
-                    }
+                        },
+                        xAxis: {
+                            title: {
+                                text: 'Año'
+                            },
+                        },
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        },
+                        plotOptions: {
+                            series: {
+                                label: {
+                                    connectorAllowed: true
+                                },
 
-                });
+                                marker: {
+                                    enabled: true,
+                                    fillColor: '#FFFFFF',
+                                    lineWidth: 2,
+                                    lineColor: null // inherit from series
+                                },
+
+                                color: getGraphColor(graph)
+                            },
+
+                            line: {
+                                dataLabels: {
+                                    enabled: true,
+                                    format: "{point.y:.6f}"
+                                },
+                                enableMouseTracking: false
+                            }
+                        },
+
+                        series: [{
+                            showInLegend: false,
+                            data: values
+                        }],
+
+                        responsive: {
+                            rules: [{
+                                condition: {
+                                    maxWidth: 1000
+                                },
+                                chartOptions: {
+                                    legend: {
+                                        layout: 'horizontal',
+                                        align: 'center',
+                                        verticalAlign: 'bottom'
+                                    }
+                                }
+                            }]
+                        }
+
+                    });
+                }
             }
 
+            /**
+             * Función que retorna el título la gráfica, basándose en su ID
+             * param {int} graph ID de la gráfica
+             */
             function getGraphMeasure(graph) {
                 switch (graph) {
                     case GRAPH_CARBON: return "Toneladas de carbono";
                     case GRAPH_AREA: return "Metros cuadrados";
                     case GRAPH_DAP: return "DAPs";
                     case GRAPH_HEIGHT: return "Metros";
-                    case GRAPGH_VOL: return "Metros cúbicos";
+                    case GRAPH_VOL: return "Metros cúbicos";
                     default: return "";
                 }
             }
 
+            /**
+             * Función que retorna el color la gráfica, basándose en su ID
+             * param {int} graph ID de la gráfica
+             */
             function getGraphColor(graph) {
                 switch (graph) {
                     case GRAPH_CARBON: return "#90CAF9";
                     case GRAPH_AREA: return "#F48FB1";
                     case GRAPH_DAP: return "#EF9A9A";
                     case GRAPH_HEIGHT: return "#80CBC4";
-                    case GRAPGH_VOL: return "#BDBDBD";
+                    case GRAPH_VOL: return "#BDBDBD";
                     default: return "#546E7A";
                 }
             }
@@ -153,15 +177,21 @@
                 var actTd = '';
                 var finalTable = '<thead><tr>{0}</tr></thead><tbody><tr>{1}</tr></tbody>'
                 for (var i = 0; i < data.length; i++) {
-                    header += '<th style="text-align: center" nowrap>Año ' + (i + 1) + '</th>';
+                    header += '<th style="text-align: center" nowrap>Año ' + i + '</th>';
                     content += '<td style="text-align: center">' + data[i] + '</td>';
                 }
 
                 return finalTable.format(header, content);
             }
 
+            /**
+             * Función que, dependiendo el vector de parámetro, creará dinámicamente el contenido
+             * de la tabla proyectada. Creará header, el cual contendrá el # de año proyectado y el body, 
+             * el cual tendrá el valor calculado
+             * param {array} data : vector con datos calculados
+             * return {html} html que contendrá la tabla
+             */
             function generateTableProjected(data) {
-                console.log(data);
                 var header = '';
                 var content = '';
                 var actTh = '';
@@ -177,9 +207,8 @@
                     } 
                     actData[actYear].push(data[i][1]);
                 }
-                console.log(actData);
                 actData.forEach(function (element, index, array) {
-                    header += '<th style="text-align: center" nowrap>Año ' + (index + 1) + '</th>';
+                    header += '<th style="text-align: center" nowrap>Año ' + index + '</th>';
                     content += '<td style="text-align: center">' + element.toString() + '</td>';
                 });
 
@@ -228,38 +257,37 @@
                 $('#pct2').prop('required', required);
             }
 
+            /**
+             * Metodo que asigna datos de el cálculo a cada una de las variables globales.
+             * Se hace una copia de los datos, para que al modificar la gráfica no se modifiquen los mismos
+             * param {array} values: array con resultados
+             */
+            function setNavValues(values) {
+                datos_carbono = values.carbono.slice(0);
+                datos_altura  = values.altura.slice(0);
+                datos_area    = values.area.slice(0);
+                datos_dap     = values.dap.slice(0);
+                datos_volumen = values.volumen.slice(0);
+            }
 
             /**
-             * Evento del botón "Ver gráfica" en calculos proyectados, el cual mostrará
-             * gráfica del resultado
+             * Método que reinicia el estado de las tabs, dejando únicamente como activa la de "Carbono" 
              */
-            $('#btnVerGrafica').click(function () {
-                $('#btnVerGrafica').addClass('active');
-                $('#btnVerDatos').removeClass('active');
+            function resetTabs() {
+                $('#nav-carbono').parent().addClass('active');
+                $('#nav-area').parent().removeClass('active');
+                $('#nav-altura').parent().removeClass('active');
+                $('#nav-dap').parent().removeClass('active');
+                $('#nav-volumen').parent().removeClass('active');
+            }
 
-                $('#graph_carbono').css('display', 'block');
-                $('#data_carbono').css('display', 'none');
-            });
-
-            /**
-             * Evento del botón "Ver datos" en calculos proyectados, el cual mostrará
-             * tabla con valores de la gráfica
-             */
-            $('#btnVerDatos').click(function () {
-                $('#btnVerDatos').addClass('active');
-                $('#btnVerGrafica').removeClass('active');
-
-                $('#data_carbono').css('display', 'block');
-                $('#graph_carbono').css('display', 'none');
-
-            });
-
+            // Reinicia form y oculta resultado (cálculo actual)
             $('#btnResetFormActual').click(function () {
-                // Reinicia form y oculta resultado
                 $('#formCalculoActual')[0].reset();
                 $('#panelResultadoActual').css('display', 'none');
             });
 
+            // Reinicia form y oculta resultado (cálculo proyectado)
             $('#btnResetFormProyectada').click(function () {
                 if ($('#checkRaleo').prop('checked'))
                     $(".panel-raleo").slideToggle("slow");
@@ -267,9 +295,13 @@
                 // Reinicia form y oculta resultado
                 $('#formCalculoProyectado')[0].reset();
                 $('#panelResultadoProyectado').css('display', 'none');
+                $('#checkRaleo').prop('disabled', true);
+                $('#lblCheckRaleo').css('color', "#dddddd");
+
+                resetTabs();
             });
 
-            // Cada vez que se escribe en este campo, se verifica su valor
+            // Cada vez que se escribe en campo de años (proyectado), se verifica su valor
             $('#txtYearsP').keyup(function () {
                 var newVal = $('#txtYearsP').val();
                 // Si valor de years tiene data, habilita checkbox
@@ -310,7 +342,67 @@
                     $('#pct2').prop('required', true);
                 }
             });
-            
+
+            // Muestra gráfica y tabla de carbono al volver esta Tab como Actual
+            $('#nav-carbono').on('click', function () {
+                if (!$(this).parent().hasClass('active')) {
+                    if ($('#checkRaleo').prop('checked')) {
+                        $('#tablaProyectada').html(generateTableProjected(datos_carbono));
+                    } else {
+                        $('#tablaProyectada').html( generateTable(datos_carbono));
+                    }
+                    showGraph(datos_carbono, GRAPH_CARBON);
+                }
+            });
+
+            // Muestra gráfica y tabla de altura al volver esta Tab como Actual
+            $('#nav-altura').on('click', function () {
+                if (!$(this).parent().hasClass('active')) {
+                    if ($('#checkRaleo').prop('checked')) {
+                        $('#tablaProyectada').html(generateTableProjected(datos_altura));
+                    } else {
+                        $('#tablaProyectada').html(generateTable(datos_altura));
+                    }
+                    showGraph(datos_altura, GRAPH_HEIGHT );
+                }
+            });
+
+            // Muestra gráfica y tabla de área al volver esta Tab como Actual
+            $('#nav-area').on('click', function () {
+                if (!$(this).parent().hasClass('active')) {
+                    if ($('#checkRaleo').prop('checked')) {
+                        $('#tablaProyectada').html(generateTableProjected(datos_area));
+                    } else {
+                        $('#tablaProyectada').html(generateTable(datos_area));
+                    }
+                    showGraph(datos_area, GRAPH_AREA);
+                }
+            });
+
+            // Muestra gráfica y tabla de DAP al volver esta Tab como Actual
+            $('#nav-dap').on('click', function () {
+                if (!$(this).parent().hasClass('active')) {
+                    if ($('#checkRaleo').prop('checked')) {
+                        $('#tablaProyectada').html(generateTableProjected(datos_dap));
+                    } else {
+                        $('#tablaProyectada').html(generateTable(datos_dap));
+                    }
+                    showGraph(datos_dap, GRAPH_DAP);
+                }
+            });
+
+            // Muestra gráfica y tabla de volumen al volver esta Tab como Actual
+            $('#nav-volumen').on('click', function () {
+                if (!$(this).parent().hasClass('active')) {
+                    if ($('#checkRaleo').prop('checked')) {
+                        $('#tablaProyectada').html(generateTableProjected(datos_volumen));
+                    } else {
+                        $('#tablaProyectada').html(generateTable(datos_volumen));
+                    }
+                    showGraph(datos_volumen, GRAPH_VOL);
+                }
+            });
+
             /**
              * Submit del form de cálculo actual.
              * Se hace Submit de la form via AJAX, y así obtener el resultado y luego 
@@ -404,16 +496,19 @@
                             var values = data.response;
                             // Llamada correcta, muestra resultado
                             if (status == 200) {
-                                console.log(values.carbon);  
-                                $('#panelResultadoProyectado').css('display', 'block');
+                                setNavValues(values);
+                                resetTabs();
 
-                                // Muestra gráfica
-                                showGraph(values.carbon, GRAPH_CARBON);
+                                $('#graph-result').data('values', values);
+                                $('#panelResultadoProyectado').css('display', 'block');
+                                showGraph(values.carbono, GRAPH_CARBON);
+
+                                // Si se usan raleos, utiliza diferente función para mostrar data
                                 if ($('#checkRaleo').prop('checked')) {
                                     // Genera tabla HTML
-                                    $('#tablaProyectada').html(generateTableProjected(values.carbon));
+                                    $('#tablaProyectada').html(generateTableProjected(values.carbono));
                                 } else {
-                                    $('#tablaProyectada').html(generateTable(values.carbon));
+                                    $('#tablaProyectada').html(generateTable(values.carbono));
                                 }
                             }
                         },
@@ -510,70 +605,65 @@
 
     <!-- Tab Cálculo proyectado-->
     <div id="calc_proyeccion" class="tab-pane fade"> 
-        <div class="col-md-5 col-lg-5 tab-upper-margin">
+        <div class="row tab-upper-margin">
             
             <!-- Ingresos -->
-            <div class="panel panel-default">
+            <div class="panel panel-default" style="margin: 0px 15px 0px 15px;">
                 <div class="panel-heading">
                     <h3 class="panel-title">Ingresos</h3>
                 </div>
                 <div class="panel-body">
                     @using (Html.BeginForm("calculoProyectado", "Calculator", FormMethod.Post, new { id = "formCalculoProyectado" }))
         {
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="sel_especieP">Especie</label>
-                        <select class="form-control big-input-size" id="sel_especieP" name="especie">
-                            <option>Pino Candelillo</option>
-                            <option>Pino Caribe</option>
-                            <option>Pinus Ocote</option>
-                            <option>Teca</option>
-                            <option>Palo Blanco</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="sel_sitio">Índice de sitio</label>
-                        <select class="form-control big-input-size" id="sel_sitio" name="indice_sitio">
-                            <option>Pésimo</option>
-                            <option>Malo</option>
-                            <option>Medio</option>
-                            <option>Bueno</option>
-                            <option>Excelente</option>
-                        </select>
-                    </div>
-                </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="sel_especieP">Especie</label>
+                            <select class="form-control big-input-size" id="sel_especieP" name="especie">
+                                <option>Pino Candelillo</option>
+                                <option>Pino Caribe</option>
+                                <option>Pinus Ocote</option>
+                                <option>Teca</option>
+                                <option>Palo Blanco</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="sel_sitio">Índice de sitio</label>
+                            <select class="form-control big-input-size" id="sel_sitio" name="indice_sitio">
+                                <option>Pésimo</option>
+                                <option>Malo</option>
+                                <option>Medio</option>
+                                <option>Bueno</option>
+                                <option>Excelente</option>
+                            </select>
+                        </div>
 
-                <div class="row input-upper-margin">
-                    <div class="col-md-6">
-                        <label for="txtYearsP">Años de proyección</label>
-                        <input id="txtYearsP" name="ms" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" required>
+                        <div class="col-md-3">
+                            <label for="txtYearsP">Años de proyección</label>
+                            <input id="txtYearsP" name="ms" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="txtNum">Número de árboles</label>
+                            <input id="txtNum" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" autocomplete="off" required>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label for="txtNum">Número de árboles</label>
-                        <input id="txtNum" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" autocomplete="off" required>
-                    </div>
-                </div>
 
-                <div class="panel panel-default panel-raleo" hidden>
+                <!-- Panel raleos -->
+                <div class="panel panel-info panel-raleo" hidden>
                     <div class="panel-body" style="padding-bottom: 10px;">
                         <div class="row input-upper-margin">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="sel_raleo1">Año primer raleo</label>
-                                <select class="form-control big-input-size" id="sel_raleo1" name="sel_raleo1">
-                                </select>
+                                <select class="form-control big-input-size" id="sel_raleo1" name="sel_raleo1"></select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="pct1">% primer raleo</label>
                                 <input id="pct1" name="pct1" type="number" class="form-control big-input-size" placeholder="15" min="0" max="50" step="any" autocomplete="off">
                             </div>
-                        </div>
-                        <div class="row input-upper-margin">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="sel_raleo2">Año segundo raleo</label>
-                                <select class="form-control big-input-size" id="sel_raleo2" name="sel_raleo2">
-                                </select>
+                                <select class="form-control big-input-size" id="sel_raleo2" name="sel_raleo2"></select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="pct2">% segundo raleo</label>
                                 <input id="pct2" name="pct2" type="number" class="form-control big-input-size" placeholder="10" min="0" max="50" step="any" autocomplete="off">
                             </div>
@@ -597,44 +687,34 @@
         <!-- /Ingresos -->
 
         <!-- Resultado -->
-        <div id="panelResultadoProyectado" class="col-md-7 col-lg-7 tab-upper-margin" hidden>
+        <div id="panelResultadoProyectado" class="row tab-upper-margin"  style="margin:20px 0px 0px 0px" hidden>
+            <ul class="nav nav-pills nav-justified">
+                <li class="active"><a data-toggle="tab" id="nav-carbono">Carbono</a></li>
+                <li><a data-toggle="tab" id="nav-dap">DAP</a></li>
+                <li><a data-toggle="tab" id="nav-area">Área</a></li>
+                <li><a data-toggle="tab" id="nav-altura">Altura</a></li>
+                <li><a data-toggle="tab" id="nav-volumen">Volumen</a></li>
+            </ul>
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Resultado</h3>
-                </div>
-                <div class="panel-body">
-
-                        <div class="tab-content" style="margin-top: 10px;">
-                            <div class="tab-pane active" id="tab_1">
-
-                                <div class="row" style="margin-right: 5px">
-                                    <div class="btn-group btn-group-xs pull-right">
-                                        <button type="button" class="active btn btn-default" id="btnVerGrafica">
-                                            Gráfica
-                                        </button>
-                                        <button type="button" class="btn btn-default" id="btnVerDatos">
-                                            Datos
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="graph_carbono" style="width:100%; height:400px; margin-bottom: 15px;"></div>
-                                <div id="data_carbono" class="row" style="margin: 5px; text-align:center;" hidden>
-                                    <h4>Contenido de carbono por año</h4>
-                                    <div style="overflow-x: auto">
-                                        <table id="tablaProyectada" class="table table-bordered"></table>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <!-- /.tab-content -->
-
-
+                <div class="panel-body" style="margin: 10px 15px 0px 15px">
+                    <div class="row" >
+                        
+                        <div id="graph-result" style="width:100%; height:100%;"></div>
                     </div>
+                    <div class="row">
+                        <div id="data-result" class="row" style="margin: 5px; text-align:center;">
+                            <div style="overflow-x: auto">
+                                <table id="tablaProyectada" class="table table-bordered"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.tab-content -->
+                </div>
             </div>
-            <div class="alert alert-info">
-                Si desea ver cómo se realizó este cálculo, entrar <a href="#" class="alert-link"> aquí </a>
+            <div class="row" style="margin: 15px 0px 0px 0px">
+                <div class="alert alert-info">
+                    Si desea ver cómo se realizó este cálculo, hacer click <a href="#" class="alert-link"> aquí </a>
+                </div>
             </div>
         </div>
         <!-- /Resultado -->
