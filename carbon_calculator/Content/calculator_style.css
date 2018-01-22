@@ -1,0 +1,55 @@
+﻿body {
+    
+}
+
+.tab-upper-margin{
+    margin-top: 10px;
+}
+
+.input-upper-margin{
+    margin-top: 5px;
+}
+
+.calcular-button{
+    text-align: right;
+    margin-top: 10px;
+    margin-right: 0px;
+}
+
+.big-input-size {
+  max-width: 1920px !important
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+.panel-raleo {
+    margin-top: 15px;
+    margin-bottom:15px;
+    background-color: #d9edf7;
+    border-color: #d9edf7;
+}
+
+.panel-raleo label {
+    font-weight: 100;
+    color: #3a87ad;
+}
+
+.raleo-header {
+    color: #3a87ad;
+    margin-top:0px;
+}
+
+.raleo-info {
+    margin-top: 10px;
+    font-size: 10px;
+    text-align: right;
+    color: #3a87ad;
+}

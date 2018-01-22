@@ -3,23 +3,584 @@
 }
 
 <script type="text/javascript">
-    $("#testing").click(function () {
-        alert('hola');
+    $(document).ready(function () {
+        $(function () {
+
+            const SUMA_RALEOS = 100;
+
+            String.prototype.format = function () {
+                var formatted = this;
+                for (var i = 0; i < arguments.length; i++) {
+                    var regexp = new RegExp('\\{' + i + '\\}', 'gi');
+                    formatted = formatted.replace(regexp, arguments[i]);
+                }
+                return formatted;
+            };
+
+            /**
+             * Función que convierte un serializedArray ({{name: key_1, value: x} ... , {name: key_n, value: y}}) a un 
+             * object key:Value ({key_1: value, ... key_n: value});
+             * return {object} objeto key:value
+             */
+            function convertSerializedArray(serializedArray) {
+                var newObject = {};
+                var actObj;
+                for (var i = 0; i < serializedArray.length; i++) {
+                    actObj = serializedArray[i];
+                    newObject[actObj.name] = actObj.value;
+                }
+                return newObject;
+            }
+
+            /**
+             * Método que crea el highchart basado en el vector que se le manda
+             * param {array} data : vector con datos calculados
+             */
+            function showGraph(data) {
+                Highcharts.chart('container', {
+
+                    title: {
+                        text: ''
+                    },
+                    subTitle: {
+                        text: ''
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Toneladas de Carbono'
+                        }
+                    },
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    },
+
+                    plotOptions: {
+                        series: {
+                            label: {
+                                connectorAllowed: false
+                            },
+                            pointStart: 1,
+                            marker: {
+                                enabled: true,
+                                fillColor: '#FFFFFF',
+                                lineWidth: 2,
+                                lineColor: null // inherit from series
+                            }
+                        }
+                    },
+
+                    series: [data],
+
+                    responsive: {
+                        rules: [{
+                            condition: {
+                                maxWidth: 1000
+                            },
+                            chartOptions: {
+                                legend: {
+                                    layout: 'horizontal',
+                                    align: 'center',
+                                    verticalAlign: 'bottom'
+                                }
+                            }
+                        }]
+                    }
+
+                });
+            }
+
+            /**
+             * Función que, dependiendo el vector de parámetro, creará dinámicamente el contenido
+             * de la tabla. Creará header, el cual contendrá el # de año proyectado y el body, 
+             * el cual tendrá el valor calculado
+             * param {array} data : vector con datos calculados
+             * return {html} html que contendrá la tabla
+             */
+            function generateTable(data) {
+                var header = '';
+                var content = '';
+                var actTh = '';
+                var actTd = '';
+                var finalTable = '<thead><tr>{0}</tr></thead><tbody><tr>{1}</tr></tbody>'
+                for (var i = 0; i < data.length; i++) {
+                    header += '<th style="text-align: center" nowrap>Año ' + (i + 1) + '</th>';
+                    content += '<td style="text-align: center">' + data[i] + '</td>';
+                }
+
+                return finalTable.format(header, content);
+            }
+
+            function generateTableProjected(data) {
+                var header = '';
+                var content = '';
+                var actTh = '';
+                var actTd = '';
+                var actData = [];
+                var actYear;
+                var finalTable = '<thead><tr>{0}</tr></thead><tbody><tr>{1}</tr></tbody>'
+                // Recorre resultados y crea un array con #año como key y value la proyección de carbono
+                for (var i = 0; i < data.length; i++) {
+                    actYear = data[i][0];
+                    if (actData[actYear] == null) {
+                        actData[actYear] = [];
+                    } 
+                    actData[actYear].push(data[i][1]);
+                }
+                
+                actData.forEach(function (element, index, array) {
+                    header += '<th style="text-align: center" nowrap>Año ' + (index + 1) + '</th>';
+                    content += '<td style="text-align: center">' + element.toString() + '</td>';
+                });
+
+                return finalTable.format(header, content);
+            }
+
+            /**
+             * Función que agrega <option> a Select de años de raleo, según la cantidad ingresada en input
+             * param {int} years: cantidad de años
+             */
+            function addYearsSelects(years) {
+
+                $('#sel_raleo1').find('option').remove();
+                $('#sel_raleo2').find('option').remove();
+
+                var firstYear = (new Date()).getFullYear();
+                var lastYear = firstYear + years;
+
+                $('#sel_raleo2').append($('<option>', {
+                    value: 0,
+                    text: "Sin Raleo"
+                }));
+
+                var count_years = 1;
+                // Agrega <option> según cantidad de años
+                for (var i = firstYear; i < lastYear; i++) {
+                    $('#sel_raleo1').append($('<option>', {
+                        value: count_years,
+                        text: i.toString()
+                    }));
+                    $('#sel_raleo2').append($('<option>', {
+                        value: count_years,
+                        text: i.toString()
+                    }));
+
+                    count_years++;
+                }
+            }
+
+            /**
+             * Función que pone como obligatorio o no obligatorio los campos de raleo
+             * param {boolean} required: true requeridos, false no requeridos
+             */
+            function updateRaleoRequired(required) {
+                $('#pct1').prop('required', required);
+                $('#pct2').prop('required', required);
+            }
+
+
+            /**
+             * Evento del botón "Ver gráfica" en calculos proyectados, el cual mostrará
+             * gráfica del resultado
+             */
+            $('#btnVerGrafica').click(function () {
+                $('#btnVerGrafica').addClass('active');
+                $('#btnVerDatos').removeClass('active');
+
+                $('#grafica_proyectada').css('display', 'block');
+                $('#datos_proyectados').css('display', 'none');
+            });
+
+            /**
+             * Evento del botón "Ver datos" en calculos proyectados, el cual mostrará
+             * tabla con valores de la gráfica
+             */
+            $('#btnVerDatos').click(function () {
+                $('#btnVerDatos').addClass('active');
+                $('#btnVerGrafica').removeClass('active');
+
+                $('#datos_proyectados').css('display', 'block');
+                $('#grafica_proyectada').css('display', 'none');
+
+            });
+
+            $('#btnResetFormActual').click(function () {
+                // Reinicia form y oculta resultado
+                $('#formCalculoActual')[0].reset();
+                $('#panelResultadoActual').css('display', 'none');
+            });
+
+            $('#btnResetFormProyectada').click(function () {
+                if ($('#checkRaleo').prop('checked'))
+                    $(".panel-raleo").slideToggle("slow");
+
+                // Reinicia form y oculta resultado
+                $('#formCalculoProyectado')[0].reset();
+                $('#panelResultadoProyectado').css('display', 'none');
+            });
+
+            // Cada vez que se escribe en este campo, se verifica su valor
+            $('#txtYearsP').keyup(function () {
+                var newVal = $('#txtYearsP').val();
+                // Si valor de years tiene data, habilita checkbox
+                if (newVal !== "") {
+                    $('#checkRaleo').prop('disabled', false);
+                    $('#lblCheckRaleo').css('color', "black");
+                    // Llena Select con años
+                    addYearsSelects(parseInt(newVal));
+                } else {
+                    // Si lo deja Empty y el checkbox esta seleccionado, le hace uncheck y oculta panel
+                    if ($('#checkRaleo').prop('checked')) {
+                        $('#checkRaleo').prop('checked', false);
+                        $(".panel-raleo").slideToggle("slow");
+                        updateRaleoRequired(false);
+                    }
+                    $('#checkRaleo').prop('disabled', true);
+                    $('#lblCheckRaleo').css('color', "#dddddd");
+                }
+                
+            });
+
+            // Cada vez que cambia checkbox, mostrará/ocultará panel de raleo
+            $("#checkRaleo").change(function() {
+                $(".panel-raleo").slideToggle("slow");
+                updateRaleoRequired(this.checked);
+
+                // Inicialmente este año no es obligatorio
+                $('#pct2').prop('required', false);
+            });
+
+            // Cambio del Combobox de Año raleo 2
+            $("#sel_raleo2").change(function () {
+                // Si selecciona "Sin Raleo", limpia campo del %
+                if ($("#sel_raleo2").val() === "0") {
+                    $('#pct2').val('');
+                    $('#pct2').prop('required', false);
+                } else {
+                    $('#pct2').prop('required', true);
+                }
+            });
+            
+            /**
+             * Submit del form de cálculo actual.
+             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego 
+             * mostrarlo en el panel de resultado
+             */
+            $('#formCalculoActual').submit(function (event) {
+                event.preventDefault();
+                var formData = convertSerializedArray($(this).serializeArray());
+                var postURL = '@Url.Action("calculoActual", "Calculator")';
+                $.ajax({
+                    url: postURL,
+                    method: "POST", 
+                    data: formData,
+                    success: function (data) {
+                        var status = data.status;
+                        // Llamada correcta, muestra resultado
+                        if (status == 200) {
+                            $('#panelResultadoActual').css('display', 'block');
+                            $('#lblResultado').html(data.response + " Toneladas de Carbono");
+                        }
+                    },
+                    error: function (requestObject, error, errorThrown) {
+                        alert('Error en cálculo');
+                    }
+                });
+            });
+
+            /**
+             * Submit del form de cálculo proyectado.
+             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego 
+             * mostrarlo en el panel de resultado
+             */
+            $('#formCalculoProyectado').submit(function (event) {
+                event.preventDefault();
+                var formData = convertSerializedArray($(this).serializeArray());
+                var postURL = '@Url.Action("calculoProyectado", "Calculator")';
+
+                var sumaRaleo = 0;
+
+                // Si el año de los raleos es distinto, sí lo toma en cuenta.
+                if (formData.sel_raleo1 !== formData.sel_raleo2) {
+
+                    var raleo = {};
+                    // Si la opción de raleos está seleccionada, obtiene sus valores
+                    if ($('#checkRaleo').prop('checked')) {
+
+                        if (formData.pct1 > 0 && formData.pct1 <= 50) {
+
+                            raleo[formData.sel_raleo1] = formData.pct1;
+                            // Si sí hay raleo, agrega propiedad a objeto
+                            if (formData.sel_raleo2 !== "0") {
+
+                                if (formData.pct2 > 0 && formData.pct2 <= 50) {
+
+                                    raleo[formData.sel_raleo2] = formData.pct2;
+                                    sumaRaleo = parseInt(raleo[formData.sel_raleo1]) + parseInt(raleo[formData.sel_raleo2]);
+                                }
+                                else {
+                                    alert("Raleos deben ser menor o igual a 50%");
+                                }
+
+                            } else
+                                sumaRaleo = parseInt(raleo[formData.sel_raleo1]);
+                        }
+                        else {
+                            alert("Raleos deben ser menor o igual a 50%");
+                        }
+                    }
+
+                    // Elimina campos de raleo del Form
+                    delete formData['pct1'];
+                    delete formData['pct2'];
+                    delete formData['sel_raleo1'];
+                    delete formData['sel_raleo2'];
+
+                    // Agreba objeto de raleo a campos del Form
+                    formData['raleo'] = JSON.stringify(raleo);
+                } else {
+                    alert('Debe seleccionar años diferentes')
+                }
+
+                // Verifica que la suma de raleos esté correcta
+                if (sumaRaleo <= SUMA_RALEOS) {
+
+                    $.ajax({
+                        url: postURL,
+                        method: "POST",
+                        data: formData,
+                        success: function (data) {
+                            var status = data.status;
+
+                            // Llamada correcta, muestra resultado
+                            if (status == 200) {
+                                $('#panelResultadoProyectado').css('display', 'block');
+
+                                // Muestra gráfica
+                                showGraph({
+                                    name: 'Carbono',
+                                    data: data.response
+                                });
+
+                                // Genera tabla HTML
+                                $('#tablaProyectada').html(generateTableProjected(data.response));
+                            }
+                        },
+                        error: function (requestObject, error, errorThrown) {
+                            alert('Error en cálculo');
+                        }
+                    });
+                } else {
+                    alert("La suma de los raleos debe ser menor o igual al 100%");
+                }
+            });
+
+        })
     });
 </script>
 
-<div class="jumbotron">
-    <h1>Calculadora de carbono</h1>
-</div>
+<ul class="nav nav-tabs">
+    <li class="active">
+        <a data-toggle="tab" href="#calc_actual">Actual</a>
+    </li>
+    <li>
+        <a data-toggle="tab" href="#calc_proyeccion">Proyección</a>
+    </li>
+</ul>
 
-<div class="row">
-    <div class="col-md-4">
-        <button id="testing"></button>
-    </div>
-    <div class="col-md-4">
+<div class="tab-content">
+    <!-- Tab Cálculo actual-->
+    <div id="calc_actual" class="tab-pane fade in active">
+        
+        <!-- Ingresos -->
+        <div class="col-md-6 col-lg-6 tab-upper-margin"> 
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ingresos</h3>
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("calculoActual", "Calculator", FormMethod.Post, new { id = "formCalculoActual" }))
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="sel_especie">Especie</label>
+                                <select class="form-control big-input-size" id="sel_especie" name="especie">
+                                    <option>Pino Candelillo</option>
+                                    <option>Pino Caribe</option>
+                                    <option>Pinus Ocote</option>
+                                    <option>Teca</option>
+                                    <option>Palo Blanco</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="#txtDAP">DAP</label>
+                                <input id="txtDAP" name="dap" type="number" class="form-control big-input-size" placeholder="15 cm" min="0" step="any" autocomplete="off" required>
+                            </div>
+                        </div>
 
-    </div>
-    <div class="col-md-4">
+                        <div class="row input-upper-margin">
+                            <div class="col-md-6">
+                                <label for="txtNumero">Número de árboles</label>
+                                <input id="txtNumero" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" step="1" autocomplete="off" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="txtAltura">Altura media</label>
+                                <input id="txtAltura" name="altura" type="number" class="form-control big-input-size" placeholder="10 m" min="0" step="any" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="row calcular-button">
+                            <button type="submit" class="btn btn-primary">Calcular</button>
+                            <button id="btnResetFormActual" type="reset" class="btn btn-danger">Reiniciar</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div> 
+        <!-- /Ingresos -->
 
+        <!-- Resultado -->
+        <div id="panelResultadoActual" class="col-md-6 col-lg-6 tab-upper-margin" hidden>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Resultado</h3>
+                </div>
+                <div class="panel-body">
+                    <b>El contenido de carbono es de: </b> <label id="lblResultado" style="font-weight:normal">10 tulis</label>
+                </div>
+            </div>
+            <div class="alert alert-info">
+                <strong>Atención</strong> si desea ver cómo se realizó este cálculo, entrar <a href="#" class="alert-link"> aquí </a>
+            </div>
+        </div> 
+        <!-- /Resultado -->
+
+    </div> 
+    <!-- /Tab Cálculo actual-->
+
+    <!-- Tab Cálculo proyectado-->
+    <div id="calc_proyeccion" class="tab-pane fade"> 
+        <div class="col-md-5 col-lg-5 tab-upper-margin">
+            
+            <!-- Ingresos -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Ingresos</h3>
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("calculoProyectado", "Calculator", FormMethod.Post, new { id = "formCalculoProyectado" }))
+        {
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="sel_especieP">Especie</label>
+                        <select class="form-control big-input-size" id="sel_especieP" name="especie">
+                            <option>Pino Candelillo</option>
+                            <option>Pino Caribe</option>
+                            <option>Pinus Ocote</option>
+                            <option>Teca</option>
+                            <option>Palo Blanco</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="sel_sitio">Índice de sitio</label>
+                        <select class="form-control big-input-size" id="sel_sitio" name="indice_sitio">
+                            <option>Pésimo</option>
+                            <option>Malo</option>
+                            <option>Medio</option>
+                            <option>Bueno</option>
+                            <option>Excelente</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row input-upper-margin">
+                    <div class="col-md-6">
+                        <label for="txtYearsP">Años de proyección</label>
+                        <input id="txtYearsP" name="ms" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="txtNum">Número de árboles</label>
+                        <input id="txtNum" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" autocomplete="off" required>
+                    </div>
+                </div>
+
+                <div class="panel panel-default panel-raleo" hidden>
+                    <div class="panel-body" style="padding-bottom: 10px;">
+                        <div class="row input-upper-margin">
+                            <div class="col-md-6">
+                                <label for="sel_raleo1">Año primer raleo</label>
+                                <select class="form-control big-input-size" id="sel_raleo1" name="sel_raleo1">
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pct1">% primer raleo</label>
+                                <input id="pct1" name="pct1" type="number" class="form-control big-input-size" placeholder="15" min="0" max="50" step="any" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row input-upper-margin">
+                            <div class="col-md-6">
+                                <label for="sel_raleo2">Año segundo raleo</label>
+                                <select class="form-control big-input-size" id="sel_raleo2" name="sel_raleo2">
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pct2">% segundo raleo</label>
+                                <input id="pct2" name="pct2" type="number" class="form-control big-input-size" placeholder="10" min="0" max="50" step="any" autocomplete="off">
+                            </div>
+                        </div>
+                        <p class="raleo-info">El porcentaje total no puede exceder del 100%</p>
+                    </div>
+                </div>
+
+                <div class="row input-upper-margin" style="padding-left:15px; padding-right:15px;">
+                    <label id="lblCheckRaleo" style="font-weight:100; color:#dddddd"><input type="checkbox" id="checkRaleo" value="value" disabled> Utilizar raleos en el cálculo </label>
+                </div>
+
+                <div class="row calcular-button">
+                    <button type="submit" class="btn btn-primary">Calcular</button>
+                    <button id="btnResetFormProyectada" type="reset" class="btn btn-danger">Reiniciar</button>
+                </div>
+}
+                </div>
+            </div>
+        </div> 
+        <!-- /Ingresos -->
+
+        <!-- Resultado -->
+        <div id="panelResultadoProyectado" class="col-md-7 col-lg-7 tab-upper-margin" hidden>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Resultado</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row" style="margin-right: 5px">
+                        <div class="btn-group btn-group-xs pull-right">
+                            <button type="button" class="active btn btn-default" id="btnVerGrafica">
+                                Ver gráfica
+                            </button>
+                            <button type="button" class="btn btn-default" id="btnVerDatos">
+                                Ver datos
+                            </button>
+                        </div>
+                    </div>
+                    <div id="grafica_proyectada">
+                        <div id="container" style="width:100%; height:400px; margin-bottom: 15px;"></div>
+                    </div>
+                    <div class="row" style="margin: 5px; text-align:center;" id="datos_proyectados" hidden>
+                        <h4>Contenido de carbono por año</h4>
+                        <div style="overflow-x: auto">
+                            <table id="tablaProyectada" class="table table-bordered"></table>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="alert alert-info">
+                Si desea ver cómo se realizó este cálculo, entrar <a href="#" class="alert-link"> aquí </a>
+            </div>
+        </div>
+        <!-- /Resultado -->
+    
     </div>
+    <!-- /Tab Cálculo proyectado-->
 </div>

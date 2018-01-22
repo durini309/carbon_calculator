@@ -7,6 +7,11 @@ namespace carbon_calculator.Helpers
 {
     public class Specie
     {
+        public Specie()
+        {
+            ground_index = new Dictionary<string, double>();
+        }
+
         /*
          * Attributes
          */
@@ -25,11 +30,14 @@ namespace carbon_calculator.Helpers
 
         public double coef_four { get; set; }
 
+        public double coef_forma { get; set; }
+
+        public double materia_seca { get; set; }
+
         public int limit_year { get; set; }
-        
-        public int number_of_trees { get; set; }
 
         protected Dictionary<string, double> ground_index;
+
 
         /// <summary>
         /// Setting new ground types for a specie
