@@ -13,15 +13,15 @@ Primero se realiza el calculo del area basal en cada una de las unidades muestra
 El área basal (AB) es la sumatoria de las áreas transversales de todos los árboles con
 un diámetro mayor a 10 cm existentes en el área definida (héctarea) y se expresa en m^2/ha
 
-[Formula de documento de AB](https://www.google.com)
+[Formula de documento de AB](https://github.com/durini309/carbon_calculator/blob/master/medicion_simple.pdf)
 
-[Formula de documento de AB](https://www.google.com)
+[Formula de documento de AB](https://github.com/durini309/carbon_calculator/blob/master/medicion_simple.pdf)
 
 ### Calculo de contenido de carbono
 El carbono se obtiene del producto del volumen multiplicado por el contenido de materia seca
 (%MS( y por el cotenido de carbono en la MS (% C = 50% aceptado por el IPCC). 
 
-[Formula de documento de C](https://www.google.com)
+[Formula de documento de C](https://github.com/durini309/carbon_calculator/blob/master/medicion_simple.pdf)
 
 **A esta cantidad de Carbono se le aplica el Factor de Extensión de la biomasa**
 
