@@ -27,3 +27,19 @@ El carbono se obtiene del producto del volumen multiplicado por el contenido de 
 
 ## Calculo de carbono proyectado
 
+Para realizar las proyecciones de cálculo de carbono se utilizaron las formulas en funcion del tiempo encontradas en este [estudio](www.google.com) teórico. 
+
+Para cada especie definida se tenían formulas especificas de como calcular el valor del carbono en el tiempo.
+En este espacio documentaremos como se realizaban los calculos de la especie **Pino candelillo**:
+
+* Altura dominante (m): Exp(Ln(s) - 6.96328*(1/T - 0.1))
+* Diámetro (cm): Exp(2.853221 - 5.94932/T + 0.055943*S - 0.000218*N)
+* Área basal (m2/ha): Exp(1.91575 - 11.592777/T + 0.100823*S + 0.000843*N)
+* Volumen total (m3/ha): Exp(3.160695 - 18.203956/T + 0.182736*S + 0.000775*N)
+* Contenido de carbono: Volumen total * (% Materia Seca) * (CMS).
+
+Donde S es el indice de sitio, T es el tiempo, N es la cantidad de árboles.
+
+Estas formulas nos permitian obtener los datos precisos de cada una de las variables en los diferentes
+años y de esa manera se podía proyectar en una gráfica.
+
