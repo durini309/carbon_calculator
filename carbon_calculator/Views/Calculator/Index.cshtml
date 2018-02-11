@@ -661,7 +661,8 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label for="pct1">% primer raleo</label>
-                                    <input id="pct1" name="pct1" type="number" class="form-control big-input-size" placeholder="15" min="0" max="50" step="any" autocomplete="off">
+                                    <input id="pct1" name="pct1" type="number" class="form-control big-input-size" placeholder="15" min="0" max="50" step="any" autocomplete="off"
+                                           oninvalid="this.setCustomValidity('Ingresar un % válido')" oninput="setCustomValidity('')" >
                                 </div>
                                 <div class="col-md-3">
                                     <label for="sel_raleo2">Año segundo raleo</label>
@@ -669,7 +670,8 @@
                                 </div>
                                 <div class="col-md-3">
                                     <label for="pct2">% segundo raleo</label>
-                                    <input id="pct2" name="pct2" type="number" class="form-control big-input-size" placeholder="10" min="0" max="50" step="any" autocomplete="off">
+                                    <input id="pct2" name="pct2" type="number" class="form-control big-input-size" placeholder="10" min="0" max="50" step="any" autocomplete="off"
+                                           oninvalid="this.setCustomValidity('Ingresar un % válido')" oninput="setCustomValidity('')" >
                                 </div>
                             </div>
                             <p class="raleo-info">El porcentaje total no puede exceder del 100%</p>
