@@ -4,132 +4,242 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using carbon_calculator.Helpers;
-
-
+using System.Web.Services;
+using System.Web.Script.Serialization;
 
 namespace carbon_calculator.Controllers
 {
     public class CalculatorController : Controller
     {
-        Dictionary<string, Specie> species = new Dictionary<string, Specie>();
-        string chose_specie = "PINUMI";
-        string chose_ground = "Pésimo";
-
+        private const double CMS = 0.5;
 
         // GET: Calculator
         public ActionResult Index()
         {
-            species_init();
-
             return View();
         }
 
-        /// <summary>
-        /// Initiate all species to be presented
-        /// in the carbon calculator
-        /// </summary>
-        private void species_init()
+        public ActionResult About()
         {
-            /**
-             * Five species would be add it to the calculator
-             *      1. Pinus Maximinoii
-             *      2. Pinus Caribea
-             *      3. Pinus oocarpa
-             *      4. Teca (Tectona grandis)
-             *      5. Palo Blanco
-             */
-
-            /* ----- Pinus Maximinoii -----*/
-            Specie maximinoii = new Specie();
-            maximinoii.tree_code = "PINUMI";
-            maximinoii.name = "Pinus Candelillo";
-            maximinoii.fancy_name = "Pinus Maximinoi H. E. Moore";
-            maximinoii.coef_one = 3.160695;
-            maximinoii.coef_two = -18.203956;
-            maximinoii.coef_three = 0.182736;
-            maximinoii.coef_four = 0.000775;
-            maximinoii.limit_year = 16;
-            maximinoii.setGroundIndex("Pésimo", 8.18);
-            maximinoii.setGroundIndex("Malo", 11.65);
-            maximinoii.setGroundIndex("Medio", 15.12);
-            maximinoii.setGroundIndex("Bueno", 18.26);
-            maximinoii.setGroundIndex("Excelente", 21.40);
-
-            species.Add(maximinoii.tree_code, maximinoii);
-
-            /* ----- Pinus Caribea -----*/
-            Specie caribea = new Specie();
-            caribea.tree_code = "PINUCH";
-            caribea.name = "Pino Caribe, Pino de Petén";
-            caribea.fancy_name = "Pinus Caribaea var. hondurensis (Sénécl.) W. H. Barret & Golfari";
-            caribea.coef_one = 2.671109;
-            caribea.coef_two = -18.578108;
-            caribea.coef_three = 0.171615;
-            caribea.coef_four = 0.001541;
-            caribea.limit_year = 25;
-            caribea.setGroundIndex("Pésimo", 9.43);
-            caribea.setGroundIndex("Malo", 12.46);
-            caribea.setGroundIndex("Medio", 15.49);
-            caribea.setGroundIndex("Bueno", 17.36);
-            caribea.setGroundIndex("Excelente", 19.23);
-
-            species.Add(caribea.tree_code, caribea);
-
-            /* ----- Pinus Oocarpa -----*/
-            Specie oocarpa = new Specie();
-            oocarpa.tree_code = "PINUOO";
-            oocarpa.name = "Pino Ocote, Pino Colorado";
-            oocarpa.fancy_name = "Pinus Oocarpa Schiede";
-            oocarpa.coef_one = 2.246512;
-            oocarpa.coef_two = -20.855741;
-            oocarpa.coef_three = 0.242321;
-            oocarpa.coef_four = 0.001267;
-            oocarpa.limit_year = 16;
-            oocarpa.setGroundIndex("Pésimo", 5.92);
-            oocarpa.setGroundIndex("Malo", 9.67);
-            oocarpa.setGroundIndex("Medio", 13.42);
-            oocarpa.setGroundIndex("Bueno", 15.64);
-            oocarpa.setGroundIndex("Excelente", 17.86);
-
-            species.Add(oocarpa.tree_code, oocarpa);
-
-            /* ----- Teca (Tectona grandis) -----*/
-            Specie teca = new Specie();
-            teca.tree_code = "TECTGR";
-            teca.name = "Teca";
-            teca.fancy_name = "Tectona GrandisL. f.";
-            teca.coef_one = 1.605596;
-            teca.coef_two = -12.336335;
-            teca.coef_three = 0.166684;
-            teca.coef_four = 0.001142;
-            teca.limit_year = 17;
-            teca.setGroundIndex("Pésimo", 7.60);
-            teca.setGroundIndex("Malo", 13.34);
-            teca.setGroundIndex("Medio", 19.07);
-            teca.setGroundIndex("Bueno", 24.36);
-            teca.setGroundIndex("Excelente", 29.65);
-
-            species.Add(teca.tree_code, teca);
-
-            /* ----- Palo Blanco -----*/
-            Specie palo_blanco = new Specie();
-            palo_blanco.tree_code = "TABEDO";
-            palo_blanco.name = "Palo Blanco";
-            palo_blanco.fancy_name = "Tabebuia donnel-smithii Rose";
-            palo_blanco.coef_one = 0.117827;
-            palo_blanco.coef_two = -8.184507;
-            palo_blanco.coef_three = 0.271737;
-            palo_blanco.coef_four = 0.000896;
-            palo_blanco.limit_year = 15;
-            palo_blanco.setGroundIndex("Pésimo", 6.15);
-            palo_blanco.setGroundIndex("Malo", 9.55);
-            palo_blanco.setGroundIndex("Medio", 12.95);
-            palo_blanco.setGroundIndex("Bueno", 15.74);
-            palo_blanco.setGroundIndex("Excelente", 18.53);
-
-            species.Add(palo_blanco.tree_code, palo_blanco);
-
+            return View();
         }
+
+        private Specie getSpecie(string treeName)
+        {
+            Specie sp = new Specie();
+
+            switch (treeName)
+            {
+                case "Pino Candelillo":
+                    sp.tree_code = "PINUMI";
+                    sp.name = treeName;
+                    sp.fancy_name = "Pinus Maximinoi H. E. Moore";
+
+                    /* Asignacion de coeficientes de altura dominante */
+                    sp.coefs_height[0] = -6.96328;
+                    /* Asignacion de coeficientes de DAP */
+                    sp.coefs_dap[0] = 2.853221;
+                    sp.coefs_dap[1] = -5.94932;
+                    sp.coefs_dap[2] = 0.055943;
+                    sp.coefs_dap[3] = -0.000218;
+                    /* Asignacion de coeficientes de Area basal */
+                    sp.coefs_area[0] = 1.91575;
+                    sp.coefs_area[1] = -11.592777;
+                    sp.coefs_area[2] = 0.100823;
+                    sp.coefs_area[3] = 0.000843;
+                    /* Asignacion de coeficientes de volumen */
+                    sp.coefs_volumen[0] = 3.160695;
+                    sp.coefs_volumen[1] = -18.203956;
+                    sp.coefs_volumen[2] = 0.182736;
+                    sp.coefs_volumen[3] = 0.000775;
+
+                    sp.coef_forma = 0.5;
+                    sp.limit_year = 16;
+                    sp.materia_seca = 0.5;
+                    sp.setGroundIndex("Pésimo", 8.18);
+                    sp.setGroundIndex("Malo", 11.65);
+                    sp.setGroundIndex("Medio", 15.12);
+                    sp.setGroundIndex("Bueno", 18.26);
+                    sp.setGroundIndex("Excelente", 21.40);
+                    break;
+                case "Pino Caribe":
+                    sp.tree_code = "PINUCH";
+                    sp.name = treeName;
+                    sp.fancy_name = "Pinus Caribaea var. hondurensis (Sénécl.) W. H. Barret & Golfari";
+                    /* Asignacion de coeficientes de altura dominante */
+                    sp.coefs_height[0] = -7.458911;
+                    /* Asignacion de coeficientes de DAP */
+                    sp.coefs_dap[0] = 2.673197;
+                    sp.coefs_dap[1] = -5.545766;
+                    sp.coefs_dap[2] = 0.056028;
+                    sp.coefs_dap[3] = -0.000142;
+                    /* Asignacion de coeficientes de Area basal */
+                    sp.coefs_area[0] = 1.325956;
+                    sp.coefs_area[1] = -11.038033;
+                    sp.coefs_area[2] = 0.091341;
+                    sp.coefs_area[3] = 0.001634;
+                    /* Asignacion de coeficientes de volumen */
+                    sp.coefs_volumen[0] = 2.671109;
+                    sp.coefs_volumen[1] = -18.578108;
+                    sp.coefs_volumen[2] = 0.171615;
+                    sp.coefs_volumen[3] = 0.001541;
+                    sp.coef_forma = 0.5;
+                    sp.limit_year = 25;
+                    sp.materia_seca = 0.5;
+                    sp.setGroundIndex("Pésimo", 9.43);
+                    sp.setGroundIndex("Malo", 12.46);
+                    sp.setGroundIndex("Medio", 15.49);
+                    sp.setGroundIndex("Bueno", 17.36);
+                    sp.setGroundIndex("Excelente", 19.23);
+                    break;
+                case "Pino Ocote":
+                    sp.tree_code = "PINUOO";
+                    sp.name = treeName;
+                    sp.fancy_name = "Pinus sp Schiede";
+                    /* Asignacion de coeficientes de altura dominante */
+                    sp.coefs_height[0] = -6.498108;
+                    /* Asignacion de coeficientes de DAP */
+                    sp.coefs_dap[0] = 2.426552;
+                    sp.coefs_dap[1] = -6.706013;
+                    sp.coefs_dap[2] = 0.075921;
+                    sp.coefs_dap[3] = 0.00004;
+                    /* Asignacion de coeficientes de Area basal */
+                    sp.coefs_area[0] = 1.060976;
+                    sp.coefs_area[1] = -13.35596;
+                    sp.coefs_area[2] = 0.15187;
+                    sp.coefs_area[3] = 0.001278;
+                    /* Asignacion de coeficientes de volumen */
+                    sp.coefs_volumen[0] = 2.246512;
+                    sp.coefs_volumen[1] = -20.855741;
+                    sp.coefs_volumen[2] = 0.242321;
+                    sp.coefs_volumen[3] = 0.001267;
+                    sp.coef_forma = 0.5;
+                    sp.limit_year = 16;
+                    sp.materia_seca = 0.5;
+                    sp.setGroundIndex("Pésimo", 5.92);
+                    sp.setGroundIndex("Malo", 9.67);
+                    sp.setGroundIndex("Medio", 13.42);
+                    sp.setGroundIndex("Bueno", 15.64);
+                    sp.setGroundIndex("Excelente", 17.86);
+                    break;
+                case "Teca":
+                    sp.tree_code = "TECTGR";
+                    sp.name = treeName;
+                    sp.fancy_name = "Tectona GrandisL. f.";
+                    /* Asignacion de coeficientes de altura dominante */
+                    sp.coefs_height[0] = -3.891677;
+                    /* Asignacion de coeficientes de DAP */
+                    sp.coefs_dap[0] = 2.293225;
+                    sp.coefs_dap[1] = -4.118555;
+                    sp.coefs_dap[2] = 0.052407;
+                    sp.coefs_dap[3] = 0.000131;
+                    /* Asignacion de coeficientes de Area basal */
+                    sp.coefs_area[0] = 0.613447;
+                    sp.coefs_area[1] = -7.899548;
+                    sp.coefs_area[2] = 0.09739;
+                    sp.coefs_area[3] = 0.001207;
+                    /* Asignacion de coeficientes de volumen */
+                    sp.coefs_volumen[0] = 1.605596;
+                    sp.coefs_volumen[1] = -12.336335;
+                    sp.coefs_volumen[2] = 0.166684;
+                    sp.coefs_volumen[3] = 0.001142;
+                    sp.coef_forma = 0.5;
+                    sp.limit_year = 17;
+                    sp.materia_seca = 0.5;
+                    sp.setGroundIndex("Pésimo", 7.60);
+                    sp.setGroundIndex("Malo", 13.34);
+                    sp.setGroundIndex("Medio", 19.07);
+                    sp.setGroundIndex("Bueno", 24.36);
+                    sp.setGroundIndex("Excelente", 29.65);
+                    break;
+                case "Palo Blanco":
+                    sp.tree_code = "TABEDO";
+                    sp.name = "Palo Blanco";
+                    sp.fancy_name = "Tabebuia donnel-smithii Rose";
+                    /* Asignacion de coeficientes de altura dominante */
+                    sp.coefs_height[0] = -3.617786;
+                    /* Asignacion de coeficientes de DAP */
+                    sp.coefs_dap[0] = 1.663888;
+                    sp.coefs_dap[1] = -2.480653;
+                    sp.coefs_dap[2] = 0.089199;
+                    sp.coefs_dap[3] = 0.000146;
+                    /* Asignacion de coeficientes de Area basal */
+                    sp.coefs_area[0] = -0.668643;
+                    sp.coefs_area[1] = -4.714003;
+                    sp.coefs_area[2] = 0.181244;
+                    sp.coefs_area[3] = 0.00101;
+                    /* Asignacion de coeficientes de volumen */
+                    sp.coefs_volumen[0] = 0.117827;
+                    sp.coefs_volumen[1] = -8.184507;
+                    sp.coefs_volumen[2] = 0.271737;
+                    sp.coefs_volumen[3] = 0.000896;
+                    sp.coef_forma = 0.5;
+                    sp.limit_year = 15;
+                    sp.materia_seca = 0.5;
+                    sp.setGroundIndex("Pésimo", 6.15);
+                    sp.setGroundIndex("Malo", 9.55);
+                    sp.setGroundIndex("Medio", 12.95);
+                    sp.setGroundIndex("Bueno", 15.74);
+                    sp.setGroundIndex("Excelente", 18.53);
+                    break;
+                default:
+                    sp = new Specie();
+                    break;
+            }
+
+            return sp;
+        }
+
+
+        #region Carbono actual
+
+        /// <summary>
+        /// Función que obtiene el coeficiente de forma dependiendo de la especie mandada
+        /// </summary>
+        /// <param name="especie"></param>
+        /// <returns> coeficiente de forma </returns>
+        private double getCoeficienteForma(string especie)
+        {
+            return getSpecie(especie).coef_forma;
+        }
+
+        /// <summary>
+        /// Función que se encarga de calcular el volumen maderal
+        /// </summary>
+        /// <param name="dap"></param>
+        /// <param name="numArboles"></param>
+        /// <param name="altura"></param>
+        /// <param name="cforma"></param>
+        /// <returns> volumen maderal </returns>
+        private double woodVolume(double dap, int numArboles, double altura, double cforma)
+        {
+            // Calculamos el area basal por hectarea
+            double ab = Math.Pow(dap, 2) * (Math.PI / 4) * (double)numArboles;
+
+            return ab * altura * cforma;
+        }
+
+        /// <summary>
+        /// Función que calcula el carbono actual
+        /// </summary>
+        /// <param name="especie"></param>
+        /// <param name="dap"></param>
+        /// <param name="numArboles"></param>
+        /// <param name="altura"></param>
+        /// <returns> carbono total </returns>
+        private double actualCarbon(string especie, double dap, int numArboles, double altura)
+        {
+            Specie current_specie = getSpecie(especie);
+            double volumen = woodVolume(
+                    dap, 
+                    numArboles, 
+                    altura, 
+                    getCoeficienteForma(especie)
+                );
+            return totalCarbon(volumen, current_specie.materia_seca);
+        }
+
+        #endregion
 
         /// <summary>
         /// Function that calculates total volumen and total
@@ -137,24 +247,108 @@ namespace carbon_calculator.Controllers
         /// TODO: raleos
         /// </summary>
         /// <returns></returns>
-        private List<double[]> algorithm()
+        private Dictionary<string, double[]> projectedCarbon(string especie, string indiceSitio, int numArboles, int years)
         {
-            Specie current_specie = species[chose_specie];
-            double current_ground = current_specie.getGroundIndex(chose_specie);
-            List<double[]> response = new List<double[]>();
+            /* Variables locales */
+            Specie current_specie = getSpecie(especie);
+            double current_ground = current_specie.getGroundIndex(indiceSitio);
+            double ms = current_specie.materia_seca;
 
-            for (int year = 0; year <= current_specie.limit_year; year++)
+            /* Inicializando valores de respuesta */
+            Dictionary<string, double[]> response = new Dictionary<string, double[]>();
+            response["altura"] = new double[years + 1];
+            response["dap"] = new double[years + 1];
+            response["area"] = new double[years + 1];
+            response["volumen"] = new double[years + 1];
+            response["carbono"] = new double[years + 1];
+
+
+            for (int year = 1; year <= years; year++)
             {
-                double total_vol = Math.Exp(
-                    current_specie.coef_one + 
-                    (current_specie.coef_two / year) +
-                    (current_specie.coef_three * current_ground) + 
-                    (current_specie.coef_four * current_specie.number_of_trees));
-                
-                response.Add(new double[] {
-                        total_vol,
-                        total_carbon(total_vol, 5)
-                });
+                /* Proyección de altura dominante */
+                response["altura"][year] = alturaDominanteProyectada(current_specie, current_ground, year);
+
+                /* Proyección de DAP */
+                response["dap"][year] = dapProyectado(current_specie, current_ground, year, numArboles);
+
+                /* Proyección de Area basal */
+                response["area"][year] = areaProyectada(current_specie, current_ground, year, numArboles);
+
+                /* Proyección de volumen */
+                double total_vol = 
+                    volumenProyectado(current_specie, current_ground, year, numArboles);
+
+                response["volumen"][year] = total_vol;
+
+                /* Proyección de carbono */
+                response["carbono"][year] = Math.Round(totalCarbon(total_vol, ms), 8);
+            }
+
+            return response;
+        }
+
+        private Dictionary<string, List<double[,]>> projectedCarbonRaleos(string especie, string indiceSitio, int numArboles, int years, Dictionary<string, string> raleo)
+        {
+            /* Variables locales */
+            double aux_raleo = 0;
+            Specie current_specie = getSpecie(especie);
+            double current_ground = current_specie.getGroundIndex(indiceSitio);
+            double ms = current_specie.materia_seca;
+
+            /* Inicializando valores de respuesta */
+            Dictionary<string, List<double[,]>> response = new Dictionary<string, List<double[,]>>();
+            response["altura"] = new List<double[,]>();
+            response["dap"] = new List<double[,]>();
+            response["area"] = new List<double[,]>();
+            response["volumen"] = new List<double[,]>();
+            response["carbono"] = new List<double[,]>();
+
+            /* Posicion[0,0] */
+            response["altura"].Add(new double[1, 2] { { 0, 0 } });
+            response["dap"].Add(new double[1, 2] { { 0, 0 } });
+            response["area"].Add(new double[1, 2] { { 0, 0 } });
+            response["volumen"].Add(new double[1, 2] { { 0, 0 } });
+            response["carbono"].Add(new double[1, 2] { { 0, 0 } });
+
+
+            for (int year = 1; year <= years; year++)
+            {
+                /* Proyección de altura dominante - Valor sin raleo */
+                response["altura"].Add(new double[1, 2] { { year, alturaDominanteProyectada(current_specie, current_ground, year) } });
+
+                /* Proyección de DAP - Valor sin raleo */
+                response["dap"].Add(new double[1, 2] { { year, dapProyectado(current_specie, current_ground, year, numArboles) } });
+
+                /* Proyección de Area basal - Valor sin raleo */
+                response["area"].Add(new double[1, 2] { { year, areaProyectada(current_specie, current_ground, year, numArboles) } });
+
+                /* Proyección de volumen - Valor sin raleo */
+                double total_vol =
+                    volumenProyectado(current_specie, current_ground, year, numArboles);
+                response["volumen"].Add(new double[1, 2] { { year, total_vol } });
+
+                /* Proyección de carbono - Valor sin raleo */
+                response["carbono"].Add(new double[1, 2] { { year, Math.Round(totalCarbon(total_vol, ms), 8) } });
+
+                if (raleo.ContainsKey(year.ToString()) && raleo[year.ToString()] != "")
+                {
+                    /* Raleo */
+                    aux_raleo = numArboles * Convert.ToDouble(double.Parse(raleo[year.ToString()]) / 100);
+                    numArboles -= Convert.ToInt32(aux_raleo);
+                    
+                    /* Proyección de DAP - Valor sin raleo */
+                    response["dap"].Add(new double[1, 2] { { year, dapProyectado(current_specie, current_ground, year, numArboles) } });
+
+                    /* Proyección de Area basal - Valor sin raleo */
+                    response["area"].Add(new double[1, 2] { { year, areaProyectada(current_specie, current_ground, year, numArboles) } });
+
+                    /* Proyección de volumen - Valor sin raleo */
+                    total_vol = volumenProyectado(current_specie, current_ground, year, numArboles);
+                    response["volumen"].Add(new double[1, 2] { { year, total_vol } });
+
+                    /* Proyección de carbono - Valor sin raleo */
+                    response["carbono"].Add(new double[1, 2] { { year, Math.Round(totalCarbon(total_vol, ms), 8) } });
+                }
             }
 
             return response;
@@ -168,8 +362,109 @@ namespace carbon_calculator.Controllers
         /// <param name="ms"></param>
         /// <param name="cms"></param>
         /// <returns></returns>
-        private double total_carbon(double volumen, double ms, double cms = 0.5) {
-            return volumen * ms * cms;
+        private double totalCarbon(double volumen, double ms) {
+            return Math.Round(volumen * ms * CMS, 3);
         }
+
+        /// <summary>
+        /// Función que permite calcular la altura dominante proyectado
+        /// en determinado t
+        /// </summary>
+        /// <param name="act_esp"></param>
+        /// <param name="indice_sitio"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        private double alturaDominanteProyectada(Specie act_esp, double indice_sitio, int year)
+        {
+            return Math.Round(Math.Exp(Math.Log10(indice_sitio) + act_esp.coefs_area[0] * (1 / year - 0.1)), 3);
+        }
+
+        /// <summary>
+        /// Función que permite calcular el DAP proyectado
+        /// en determinado t
+        /// </summary>
+        /// <param name="act_esp"></param>
+        /// <param name="indice_sitio"></param>
+        /// <param name="year"></param>
+        /// <param name="numArboles"></param>
+        /// <returns></returns>
+        private double dapProyectado(Specie act_esp, double indice_sitio, int year, int numArboles)
+        {
+            return Math.Round(Math.Exp(act_esp.coefs_dap[0] + (act_esp.coefs_dap[1] / year) + (act_esp.coefs_dap[2] * indice_sitio) + (act_esp.coefs_dap[3] * numArboles)), 3);
+        }
+
+        /// <summary>
+        /// Función que permite calcular el area proyectada
+        /// en determinado t
+        /// </summary>
+        /// <param name="act_esp"></param>
+        /// <param name="indice_sitio"></param>
+        /// <param name="year"></param>
+        /// <param name="numArboles"></param>
+        /// <returns></returns>
+        private double areaProyectada(Specie act_esp, double indice_sitio, int year, int numArboles)
+        {
+            return Math.Round(Math.Exp(act_esp.coefs_area[0] + (act_esp.coefs_area[1] / year) + (act_esp.coefs_area[2] * indice_sitio) + (act_esp.coefs_area[3] * numArboles)), 3);
+        }
+
+        /// <summary>
+        /// Función que permite calcular el volumen proyectado
+        /// en determinado t
+        /// </summary>
+        /// <param name="act_esp"></param>
+        /// <param name="indice_sitio"></param>
+        /// <param name="year"></param>
+        /// <param name="numArboles"></param>
+        /// <returns></returns>
+        private double volumenProyectado(Specie act_esp, double indice_sitio, int year, int numArboles)
+        {
+            return Math.Round(Math.Exp(act_esp.coefs_volumen[0] + (act_esp.coefs_volumen[1] / year) + (act_esp.coefs_volumen[2] * indice_sitio) + (act_esp.coefs_volumen[3] * numArboles)), 3);
+        }
+
+        [HttpPost]
+        public ActionResult calculoActual(string especie, double dap, int numArboles, double altura)
+        {
+            dap /= 100;
+
+            double carbon = actualCarbon(especie, dap, numArboles, altura);
+
+            return Json(new
+            {
+                status = "200", 
+                response = Math.Round(carbon, 2)
+            });
+        }
+
+        [HttpPost]
+        public ActionResult calculoProyectado(string especie, string indice_sitio, string ms, int numArboles, string raleo)
+        {
+            /* Calculo proyectado con raleos */
+            if(!(raleo == "{}"))
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                return Json(new
+                {
+                    status = "200",
+                    response = projectedCarbonRaleos(especie, indice_sitio, numArboles, int.Parse(ms), serializer.Deserialize<Dictionary<string, string>>(raleo))
+                });
+            }
+            /* Calculo proyecto sin raleos */
+            else
+            {
+                Dictionary<string, double[]> data = projectedCarbon(especie, indice_sitio, numArboles, int.Parse(ms));
+                return Json(new
+                {
+                    status = "200",
+                    response = data
+                });
+            }
+        }
+
+        /**
+          * TODO: 
+          *     - Hoja de cómo se calculó todo
+          *     - Gráficas UI
+          */
+
     }
 }
