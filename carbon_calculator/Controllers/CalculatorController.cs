@@ -19,6 +19,11 @@ namespace carbon_calculator.Controllers
             return View();
         }
 
+        public ActionResult About()
+        {
+            return View();
+        }
+
         private Specie getSpecie(string treeName)
         {
             Specie sp = new Specie();
@@ -358,7 +363,7 @@ namespace carbon_calculator.Controllers
         /// <param name="cms"></param>
         /// <returns></returns>
         private double totalCarbon(double volumen, double ms) {
-            return volumen * ms * CMS;
+            return Math.Round(volumen * ms * CMS, 3);
         }
 
         /// <summary>
@@ -371,7 +376,7 @@ namespace carbon_calculator.Controllers
         /// <returns></returns>
         private double alturaDominanteProyectada(Specie act_esp, double indice_sitio, int year)
         {
-            return Math.Exp(Math.Log10(indice_sitio) + act_esp.coefs_area[0] * (1 / year - 0.1));
+            return Math.Round(Math.Exp(Math.Log10(indice_sitio) + act_esp.coefs_area[0] * (1 / year - 0.1)), 3);
         }
 
         /// <summary>
@@ -385,7 +390,7 @@ namespace carbon_calculator.Controllers
         /// <returns></returns>
         private double dapProyectado(Specie act_esp, double indice_sitio, int year, int numArboles)
         {
-            return Math.Exp(act_esp.coefs_dap[0] + (act_esp.coefs_dap[1] / year) + (act_esp.coefs_dap[2] * indice_sitio) + (act_esp.coefs_dap[3] * numArboles));
+            return Math.Round(Math.Exp(act_esp.coefs_dap[0] + (act_esp.coefs_dap[1] / year) + (act_esp.coefs_dap[2] * indice_sitio) + (act_esp.coefs_dap[3] * numArboles)), 3);
         }
 
         /// <summary>
@@ -399,7 +404,7 @@ namespace carbon_calculator.Controllers
         /// <returns></returns>
         private double areaProyectada(Specie act_esp, double indice_sitio, int year, int numArboles)
         {
-            return Math.Exp(act_esp.coefs_area[0] + (act_esp.coefs_area[1] / year) + (act_esp.coefs_area[2] * indice_sitio) + (act_esp.coefs_area[3] * numArboles));
+            return Math.Round(Math.Exp(act_esp.coefs_area[0] + (act_esp.coefs_area[1] / year) + (act_esp.coefs_area[2] * indice_sitio) + (act_esp.coefs_area[3] * numArboles)), 3);
         }
 
         /// <summary>
@@ -413,7 +418,7 @@ namespace carbon_calculator.Controllers
         /// <returns></returns>
         private double volumenProyectado(Specie act_esp, double indice_sitio, int year, int numArboles)
         {
-            return Math.Exp(act_esp.coefs_volumen[0] + (act_esp.coefs_volumen[1] / year) + (act_esp.coefs_volumen[2] * indice_sitio) + (act_esp.coefs_volumen[3] * numArboles));
+            return Math.Round(Math.Exp(act_esp.coefs_volumen[0] + (act_esp.coefs_volumen[1] / year) + (act_esp.coefs_volumen[2] * indice_sitio) + (act_esp.coefs_volumen[3] * numArboles)), 3);
         }
 
         [HttpPost]

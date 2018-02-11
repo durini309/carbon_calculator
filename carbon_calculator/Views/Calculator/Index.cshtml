@@ -138,11 +138,11 @@
              */
             function getGraphMeasure(graph) {
                 switch (graph) {
-                    case GRAPH_CARBON: return "Toneladas de carbono";
-                    case GRAPH_AREA: return "Metros cuadrados";
-                    case GRAPH_DAP: return "DAPs";
-                    case GRAPH_HEIGHT: return "Metros";
-                    case GRAPH_VOL: return "Metros cúbicos";
+                    case GRAPH_CARBON: return "Unidades de carbono";
+                    case GRAPH_AREA: return "Área Basal (m²/ha)";
+                    case GRAPH_DAP: return "DAP (cm)";
+                    case GRAPH_HEIGHT: return "Altura dominante (m)";
+                    case GRAPH_VOL: return "Volumen total (m³/ha)";
                     default: return "";
                 }
             }
@@ -422,7 +422,7 @@
                         // Llamada correcta, muestra resultado
                         if (status == 200) {
                             $('#panelResultadoActual').css('display', 'block');
-                            $('#lblResultado').html(data.response + " Toneladas de Carbono");
+                            $('#lblResultado').html(data.response + " Unidades de Carbono");
                         }
                     },
                     error: function (requestObject, error, errorThrown) {
@@ -526,6 +526,7 @@
     });
 </script>
 
+
 <ul class="nav nav-tabs">
     <li class="active">
         <a data-toggle="tab" href="#calc_actual">Actual</a>
@@ -560,16 +561,19 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="#txtDAP">DAP</label>
-                        <input id="txtDAP" name="dap" type="number" class="form-control big-input-size" placeholder="15 cm" min="0" step="any" autocomplete="off" required>
+                        <label for="#txtDAP">DAP (cm)</label>
+                        <input id="txtDAP" name="dap" type="number" class="form-control big-input-size" placeholder="15 cm" min="0" step="any" autocomplete="off" 
+                               oninvalid="this.setCustomValidity('Ingresar un DAP válido')" oninput="setCustomValidity('')" required>
                     </div>
                     <div class="col-md-3">
-                        <label for="txtNumero">Número de árboles</label>
-                        <input id="txtNumero" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" step="1" autocomplete="off" required>
+                        <label for="txtNumero">Número de árboles por hectárea</label>
+                        <input id="txtNumero" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" step="1" autocomplete="off" 
+                               oninvalid="this.setCustomValidity('Ingresar un número válido')" oninput="setCustomValidity('')" required>
                     </div>
                     <div class="col-md-3">
-                        <label for="txtAltura">Altura media</label>
-                        <input id="txtAltura" name="altura" type="number" class="form-control big-input-size" placeholder="10 m" min="0" step="any" autocomplete="off" required>
+                        <label for="txtAltura">Altura media (m)</label>
+                        <input id="txtAltura" name="altura" type="number" class="form-control big-input-size" placeholder="10 m" min="0" step="any" autocomplete="off"
+                               oninvalid="this.setCustomValidity('Ingresar una altura válido')" oninput="setCustomValidity('')" required>
                     </div>
                 </div>
 
@@ -590,7 +594,7 @@
                     <h3 class="panel-title">Resultado</h3>
                 </div>
                 <div class="panel-body">
-                    <b>El contenido de carbono es de: </b> <label id="lblResultado" style="font-weight:normal">10 tulis</label>
+                    <b>Resultado: </b> <label id="lblResultado" style="font-weight:normal">10 tulis</label>
                 </div>
             </div>
             <div class="alert alert-info">
@@ -637,11 +641,13 @@
 
                         <div class="col-md-3">
                             <label for="txtYearsP">Años de proyección</label>
-                            <input id="txtYearsP" name="ms" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" required>
+                            <input id="txtYearsP" name="ms" type="number" class="form-control big-input-size" placeholder="5 años" min="0" step="1" autocomplete="off" 
+                                   oninvalid="this.setCustomValidity('Ingresar cantidad de años válida')" oninput="setCustomValidity('')" required>
                         </div>
                         <div class="col-md-3">
-                            <label for="txtNum">Número de árboles</label>
-                            <input id="txtNum" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" autocomplete="off" required>
+                            <label for="txtNum">Número de árboles por hectárea</label>
+                            <input id="txtNum" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" autocomplete="off" 
+                                   oninvalid="this.setCustomValidity('Ingresar un número válido')" oninput="setCustomValidity('')" required>
                         </div>
                     </div>
 
@@ -689,9 +695,9 @@
             <ul class="nav nav-pills nav-justified">
                 <li class="active"><a data-toggle="tab" id="nav-carbono">Carbono</a></li>
                 <li><a data-toggle="tab" id="nav-dap">DAP</a></li>
-                <li><a data-toggle="tab" id="nav-area">Área</a></li>
-                <li><a data-toggle="tab" id="nav-altura">Altura</a></li>
-                <li><a data-toggle="tab" id="nav-volumen">Volumen</a></li>
+                <li><a data-toggle="tab" id="nav-area">Área basal</a></li>
+                <li><a data-toggle="tab" id="nav-altura">Altura dominante</a></li>
+                <li><a data-toggle="tab" id="nav-volumen">Volumen total</a></li>
             </ul>
             <div class="panel panel-default">
                 <div class="panel-body" style="margin: 10px 15px 0px 15px">
