@@ -376,7 +376,7 @@ namespace carbon_calculator.Controllers
         /// <returns></returns>
         private double alturaDominanteProyectada(Specie act_esp, double indice_sitio, int year)
         {
-            return Math.Round(Math.Exp(Math.Log10(indice_sitio) + act_esp.coefs_area[0] * (1 / year - 0.1)), 3);
+            return Math.Round(Math.Exp(Math.Log(indice_sitio) + act_esp.coefs_height[0] * ((double) 1 / year) - 0.1), 3);
         }
 
         /// <summary>
