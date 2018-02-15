@@ -1,5 +1,5 @@
 ﻿body {
-    
+    background-color: #fafafa;
 }
 
 .tab-upper-margin{
@@ -52,4 +52,13 @@ input[type=number] {
     font-size: 10px;
     text-align: right;
     color: #3a87ad;
+}
+
+.graph-picker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    height: 50%;
+    width: 50%;
 }
