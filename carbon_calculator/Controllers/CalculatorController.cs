@@ -182,8 +182,17 @@ namespace carbon_calculator.Controllers
                     sp.setGroundIndex("Bueno", 15.74);
                     sp.setGroundIndex("Excelente", 18.53);
                     break;
+                case "Acrocarpus":
+                    sp.tree_code = "ACROFR";
+                    sp.name = "Acrocarpus";
+                    sp.fancy_name = "Acrocarpus froxinifolius Wight & Arn";
+                    sp.coef_forma = 0.5;
+                    sp.materia_seca = 0.5;
+                    break;
                 default:
                     sp = new Specie();
+                    sp.coef_forma = 0.5;
+                    sp.materia_seca = 0.5;
                     break;
             }
 
@@ -426,7 +435,7 @@ namespace carbon_calculator.Controllers
         {
             dap /= 100;
 
-            double carbon = actualCarbon(especie, dap, numArboles, altura);
+            double carbon = actualCarbon("", dap, numArboles, altura);
 
             return Json(new
             {
