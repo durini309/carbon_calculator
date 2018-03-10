@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewBag.Title = "About";
+}
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<div class="panel panel-default">
+    <div class="panel-heading">Explicación de cálculos</div>
+    <div class="panel-body">
+        <div id="readme" class="readme blob instapaper_body">
+            <article class="markdown-body entry-content" itemprop="text">
+                <p>
+                    El
+                    Detalle del procedimiento para realizar la medicion de captura de carbono en la biomasa forestal.
+                </p>
+                <h2><a href="#calculo-de-carbono-presente" aria-hidden="true" class="anchor" id="user-content-calculo-de-carbono-presente"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Calculo de carbono presente</h2>
+                <p>El calculo se divide en dos pasos simples:</p>
+                <ul>
+                    <li>Calculo de volumen maderable</li>
+                    <li>Calculo de contenido de carbono</li>
+                </ul>
+                <h3><a href="#calculo-de-volumen-maderable" aria-hidden="true" class="anchor" id="user-content-calculo-de-volumen-maderable"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Calculo de volumen maderable</h3>
+                <p>
+                    Primero se realiza el calculo del area basal en cada una de las unidades muestrales.
+                    El área basal (AB) es la sumatoria de las áreas transversales de todos los árboles con
+                    un diámetro mayor a 10 cm existentes en el área definida (héctarea) y se expresa en ${m^2 \over ha}$    
+                    $$ AB = \sum_{i=1}^{n} at_i $$                    
+                    $$AB = [(DAP_{media})^2 * 0.7854] * N $$
+                </p>
+                <h3><a href="#calculo-de-contenido-de-carbono" aria-hidden="true" class="anchor" id="user-content-calculo-de-contenido-de-carbono"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Calculo de contenido de carbono</h3>
+                <p>
+                    El carbono se obtiene del producto del volumen multiplicado por el contenido de materia seca
+                    (%MS) y por el cotenido de carbono en la MS (% C = 50% aceptado por el IPCC):<br />
+                    $$C = Vol * MS\% * CMS$$
+                </p>
+                <p>A esta cantidad de Carbono se le aplica el Factor de Extensión de la biomasa</p>
+                <p><a href="https://github.com/durini309/carbon_calculator/blob/master/medicion_simple.pdf">Ingresa aquí para una explicación más detallada</a></p>
+                <h2><a href="#calculo-de-carbono-proyectado" aria-hidden="true" class="anchor" id="user-content-calculo-de-carbono-proyectado"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Calculo de carbono proyectado</h2>
+                <p>Para realizar las proyecciones de cálculo de carbono se utilizaron las formulas en funcion del tiempo encontradas en este <a href="/durini309/carbon_calculator/blob/master/www.google.com">estudio</a> teórico.</p>
+                <p>
+                    Para cada especie definida se tenían formulas especificas de como calcular el valor del carbono en el tiempo.
+                    En este espacio documentaremos como se realizaban los calculos de la especie <strong>Pino candelillo</strong>:
+                </p>
+                <ul>
+                    <li>Altura dominante (m): $e^{(\ln(s) - 6.96328({1 \over T} - 0.1))}$</li>
+                    <li>Diámetro (cm): $e^{(2.853221 - {5.94932 \over T} + 0.055943(S) - 0.000218(N))}$</li>
+                    <li>Área basal (${m^2 \over ha}$): $e^{(1.91575 - {11.592777 \over T} + 0.100823(S) + 0.000843(N))}$</li>
+                    <li>Volumen total (${m^3 \over ha}$): $e^{(3.160695 - {18.203956 \over T} + 0.182736(S) + 0.000775(N))}$</li>
+                    <li>Contenido de carbono: Volumen total * % Materia Seca * CMS</li>
+                </ul>
+                <p>Donde <i>S</i> es el indice de sitio, <i>T</i> es el tiempo, <i>N</i> es la cantidad de árboles.</p>
+
+            </article>
+        </div>
+    </div>
+</div>
+
