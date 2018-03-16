@@ -62,3 +62,28 @@ input[type=number] {
     height: 50%;
     width: 50%;
 }
+
+.navbar-main {
+    color: #d9d9d9 !important;
+}
+
+.icon-help {
+    width: 12px;
+    height: 12px;
+    margin-top: 3px;
+    margin-right: 2px;
+    cursor: help;
+}
+
+.tooltip-inner {
+    max-width: 250px;
+}
+
+.select2.select2-container.select2-container--default {
+    width: 100% !important;
+}
+
+.select2-container .select2-selection--single {
+    height: 34px !important;
+    padding-top: 3px;
+}
