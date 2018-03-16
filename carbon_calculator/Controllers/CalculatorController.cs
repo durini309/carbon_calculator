@@ -26,176 +26,9 @@ namespace carbon_calculator.Controllers
 
         private Specie getSpecie(string treeName)
         {
-            Specie sp = new Specie();
-
-            switch (treeName)
-            {
-                case "Pino Candelillo":
-                    sp.tree_code = "PINUMI";
-                    sp.name = treeName;
-                    sp.fancy_name = "Pinus Maximinoi H. E. Moore";
-
-                    /* Asignacion de coeficientes de altura dominante */
-                    sp.coefs_height[0] = -6.96328;
-                    /* Asignacion de coeficientes de DAP */
-                    sp.coefs_dap[0] = 2.853221;
-                    sp.coefs_dap[1] = -5.94932;
-                    sp.coefs_dap[2] = 0.055943;
-                    sp.coefs_dap[3] = -0.000218;
-                    /* Asignacion de coeficientes de Area basal */
-                    sp.coefs_area[0] = 1.91575;
-                    sp.coefs_area[1] = -11.592777;
-                    sp.coefs_area[2] = 0.100823;
-                    sp.coefs_area[3] = 0.000843;
-                    /* Asignacion de coeficientes de volumen */
-                    sp.coefs_volumen[0] = 3.160695;
-                    sp.coefs_volumen[1] = -18.203956;
-                    sp.coefs_volumen[2] = 0.182736;
-                    sp.coefs_volumen[3] = 0.000775;
-
-                    sp.coef_forma = 0.5;
-                    sp.limit_year = 16;
-                    sp.materia_seca = 0.5;
-                    sp.setGroundIndex("Pésimo", 8.18);
-                    sp.setGroundIndex("Malo", 11.65);
-                    sp.setGroundIndex("Medio", 15.12);
-                    sp.setGroundIndex("Bueno", 18.26);
-                    sp.setGroundIndex("Excelente", 21.40);
-                    break;
-                case "Pino Caribe":
-                    sp.tree_code = "PINUCH";
-                    sp.name = treeName;
-                    sp.fancy_name = "Pinus Caribaea var. hondurensis (Sénécl.) W. H. Barret & Golfari";
-                    /* Asignacion de coeficientes de altura dominante */
-                    sp.coefs_height[0] = -7.458911;
-                    /* Asignacion de coeficientes de DAP */
-                    sp.coefs_dap[0] = 2.673197;
-                    sp.coefs_dap[1] = -5.545766;
-                    sp.coefs_dap[2] = 0.056028;
-                    sp.coefs_dap[3] = -0.000142;
-                    /* Asignacion de coeficientes de Area basal */
-                    sp.coefs_area[0] = 1.325956;
-                    sp.coefs_area[1] = -11.038033;
-                    sp.coefs_area[2] = 0.091341;
-                    sp.coefs_area[3] = 0.001634;
-                    /* Asignacion de coeficientes de volumen */
-                    sp.coefs_volumen[0] = 2.671109;
-                    sp.coefs_volumen[1] = -18.578108;
-                    sp.coefs_volumen[2] = 0.171615;
-                    sp.coefs_volumen[3] = 0.001541;
-                    sp.coef_forma = 0.5;
-                    sp.limit_year = 25;
-                    sp.materia_seca = 0.5;
-                    sp.setGroundIndex("Pésimo", 9.43);
-                    sp.setGroundIndex("Malo", 12.46);
-                    sp.setGroundIndex("Medio", 15.49);
-                    sp.setGroundIndex("Bueno", 17.36);
-                    sp.setGroundIndex("Excelente", 19.23);
-                    break;
-                case "Pino Ocote":
-                    sp.tree_code = "PINUOO";
-                    sp.name = treeName;
-                    sp.fancy_name = "Pinus sp Schiede";
-                    /* Asignacion de coeficientes de altura dominante */
-                    sp.coefs_height[0] = -6.498108;
-                    /* Asignacion de coeficientes de DAP */
-                    sp.coefs_dap[0] = 2.426552;
-                    sp.coefs_dap[1] = -6.706013;
-                    sp.coefs_dap[2] = 0.075921;
-                    sp.coefs_dap[3] = 0.00004;
-                    /* Asignacion de coeficientes de Area basal */
-                    sp.coefs_area[0] = 1.060976;
-                    sp.coefs_area[1] = -13.35596;
-                    sp.coefs_area[2] = 0.15187;
-                    sp.coefs_area[3] = 0.001278;
-                    /* Asignacion de coeficientes de volumen */
-                    sp.coefs_volumen[0] = 2.246512;
-                    sp.coefs_volumen[1] = -20.855741;
-                    sp.coefs_volumen[2] = 0.242321;
-                    sp.coefs_volumen[3] = 0.001267;
-                    sp.coef_forma = 0.5;
-                    sp.limit_year = 16;
-                    sp.materia_seca = 0.5;
-                    sp.setGroundIndex("Pésimo", 5.92);
-                    sp.setGroundIndex("Malo", 9.67);
-                    sp.setGroundIndex("Medio", 13.42);
-                    sp.setGroundIndex("Bueno", 15.64);
-                    sp.setGroundIndex("Excelente", 17.86);
-                    break;
-                case "Teca":
-                    sp.tree_code = "TECTGR";
-                    sp.name = treeName;
-                    sp.fancy_name = "Tectona GrandisL. f.";
-                    /* Asignacion de coeficientes de altura dominante */
-                    sp.coefs_height[0] = -3.891677;
-                    /* Asignacion de coeficientes de DAP */
-                    sp.coefs_dap[0] = 2.293225;
-                    sp.coefs_dap[1] = -4.118555;
-                    sp.coefs_dap[2] = 0.052407;
-                    sp.coefs_dap[3] = 0.000131;
-                    /* Asignacion de coeficientes de Area basal */
-                    sp.coefs_area[0] = 0.613447;
-                    sp.coefs_area[1] = -7.899548;
-                    sp.coefs_area[2] = 0.09739;
-                    sp.coefs_area[3] = 0.001207;
-                    /* Asignacion de coeficientes de volumen */
-                    sp.coefs_volumen[0] = 1.605596;
-                    sp.coefs_volumen[1] = -12.336335;
-                    sp.coefs_volumen[2] = 0.166684;
-                    sp.coefs_volumen[3] = 0.001142;
-                    sp.coef_forma = 0.5;
-                    sp.limit_year = 17;
-                    sp.materia_seca = 0.5;
-                    sp.setGroundIndex("Pésimo", 7.60);
-                    sp.setGroundIndex("Malo", 13.34);
-                    sp.setGroundIndex("Medio", 19.07);
-                    sp.setGroundIndex("Bueno", 24.36);
-                    sp.setGroundIndex("Excelente", 29.65);
-                    break;
-                case "Palo Blanco":
-                    sp.tree_code = "TABEDO";
-                    sp.name = "Palo Blanco";
-                    sp.fancy_name = "Tabebuia donnel-smithii Rose";
-                    /* Asignacion de coeficientes de altura dominante */
-                    sp.coefs_height[0] = -3.617786;
-                    /* Asignacion de coeficientes de DAP */
-                    sp.coefs_dap[0] = 1.663888;
-                    sp.coefs_dap[1] = -2.480653;
-                    sp.coefs_dap[2] = 0.089199;
-                    sp.coefs_dap[3] = 0.000146;
-                    /* Asignacion de coeficientes de Area basal */
-                    sp.coefs_area[0] = -0.668643;
-                    sp.coefs_area[1] = -4.714003;
-                    sp.coefs_area[2] = 0.181244;
-                    sp.coefs_area[3] = 0.00101;
-                    /* Asignacion de coeficientes de volumen */
-                    sp.coefs_volumen[0] = 0.117827;
-                    sp.coefs_volumen[1] = -8.184507;
-                    sp.coefs_volumen[2] = 0.271737;
-                    sp.coefs_volumen[3] = 0.000896;
-                    sp.coef_forma = 0.5;
-                    sp.limit_year = 15;
-                    sp.materia_seca = 0.5;
-                    sp.setGroundIndex("Pésimo", 6.15);
-                    sp.setGroundIndex("Malo", 9.55);
-                    sp.setGroundIndex("Medio", 12.95);
-                    sp.setGroundIndex("Bueno", 15.74);
-                    sp.setGroundIndex("Excelente", 18.53);
-                    break;
-                case "Acrocarpus":
-                    sp.tree_code = "ACROFR";
-                    sp.name = "Acrocarpus";
-                    sp.fancy_name = "Acrocarpus froxinifolius Wight & Arn";
-                    sp.coef_forma = 0.5;
-                    sp.materia_seca = 0.5;
-                    break;
-                default:
-                    sp = new Specie();
-                    sp.coef_forma = 0.5;
-                    sp.materia_seca = 0.5;
-                    break;
-            }
-
+            Specie sp = new Specie(treeName);
+            
+            string[] indices = sp.getIndicesDeSitio();
             return sp;
         }
 
@@ -435,7 +268,7 @@ namespace carbon_calculator.Controllers
         {
             dap /= 100;
 
-            double carbon = actualCarbon("", dap, numArboles, altura);
+            double carbon = actualCarbon(especie, dap, numArboles, altura);
 
             return Json(new
             {
@@ -469,11 +302,25 @@ namespace carbon_calculator.Controllers
             }
         }
 
-        /**
-          * TODO: 
-          *     - Hoja de cómo se calculó todo
-          *     - Gráficas UI
-          */
+        [HttpPost]
+        public ActionResult getIndices(string especie)
+        {
+            Specie specie = new Specie(especie);
+            if (specie.correct_specie)
+            {
+                return Json(new
+                {
+                    status = "200",
+                    response = specie.getIndicesDeSitio()
+                });
+            } else
+            {
+                return Json(new
+                {
+                    status = "400"
+                });
+            }
+        }
 
     }
 }

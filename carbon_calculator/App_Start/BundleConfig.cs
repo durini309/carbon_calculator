@@ -19,15 +19,22 @@ namespace carbon_calculator
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
+            bundles.Add(new ScriptBundle("~/bundles/select2").Include(
+                        "~/Scripts/select2.min.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/calculator").Include(
+                      "~/Scripts/calculator.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
                       "~/Content/calculator_style.css",
-                      "~/Content/github-markdown.css"));
+                      "~/Content/github-markdown.css",
+                      "~/Content/select2.min.css"));
         }
     }
 }
