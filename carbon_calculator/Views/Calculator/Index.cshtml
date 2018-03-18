@@ -184,6 +184,12 @@
                             <button id="btnResetFormProyectada" type="reset" class="btn btn-danger">Reiniciar</button>
                         </div>
                     }
+                    @using (Html.BeginForm("export", "Calculator", FormMethod.Post, new { id = "formExport" }))
+                    {
+                        <div class="row" style="margin-right: 0px; margin-top: 4px;">
+                            <button id="btnExportar" type="submit" class="btn btn-success pull-right" style="display:none;">Exportar</button>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

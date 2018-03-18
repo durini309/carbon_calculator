@@ -332,10 +332,10 @@ $(document).ready(function () {
             }
             // Reinicia form y oculta resultado
             $('#formCalculoProyectado')[0].reset();
-            $('#panelResultadoProyectado').css('display', 'none');
+            $('#panelResultadoProyectado').hide();
             $('#checkRaleo').prop('disabled', true);
             $('#lblCheckRaleo').css('color', "#dddddd");
-
+            $('#btnExportar').hide();
             resetTabs();
         });
 
@@ -541,6 +541,7 @@ $(document).ready(function () {
 
                             $('#graph-result').data('values', values);
                             $('#panelResultadoProyectado').css('display', 'block');
+                            $('#btnExportar').show();
                             showGraph(values.carbono, GRAPH_CARBON);
 
                             // Si se usan raleos, utiliza diferente función para mostrar data
@@ -571,7 +572,9 @@ $(document).ready(function () {
             data: species
         }).on('select2:select', function (e) {
             getIndicesDeSitio($(this).val());
-        });;
+        });
+
+     
 
         // Obtenemos indices de primer elemento
         getIndicesDeSitio(species[0]);
