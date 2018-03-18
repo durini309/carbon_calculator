@@ -284,20 +284,37 @@ namespace carbon_calculator.Controllers
         [HttpPost]
         public ActionResult calculoProyectado(string especie, string indice_sitio, string ms, int numArboles, string raleo)
         {
+            /* Datos en sesion para exportar */
+            System.Web.HttpContext.Current.Session["especie"] = especie;
+            System.Web.HttpContext.Current.Session["indice_sitio"] = indice_sitio;
+            System.Web.HttpContext.Current.Session["arboles_ha"] = numArboles;
+            System.Web.HttpContext.Current.Session["years"] = ms;
+
             /* Calculo proyectado con raleos */
-            if(!(raleo == "{}"))
+            if (!(raleo == "{}"))
             {
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
+                Dictionary<string, string> data_raleos = serializer.Deserialize<Dictionary<string, string>>(raleo);
+                Dictionary<string, List<double[,]>> data = projectedCarbonRaleos(especie, indice_sitio, numArboles, int.Parse(ms), data_raleos);
+
+                System.Web.HttpContext.Current.Session["raleos"] = true;
+                System.Web.HttpContext.Current.Session["data_raleos"] = data_raleos;
+                System.Web.HttpContext.Current.Session["exportable_data"] = data;
+
                 return Json(new
                 {
                     status = "200",
-                    response = projectedCarbonRaleos(especie, indice_sitio, numArboles, int.Parse(ms), serializer.Deserialize<Dictionary<string, string>>(raleo))
+                    response = data
                 });
             }
             /* Calculo proyecto sin raleos */
             else
             {
                 Dictionary<string, double[]> data = projectedCarbon(especie, indice_sitio, numArboles, int.Parse(ms));
+
+                System.Web.HttpContext.Current.Session["raleos"] = false;
+                System.Web.HttpContext.Current.Session["exportable_data"] = data;
+
                 return Json(new
                 {
                     status = "200",
