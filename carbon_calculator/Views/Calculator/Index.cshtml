@@ -31,7 +31,7 @@
             };
 
             /**
-             * Función que convierte un serializedArray ({{name: key_1, value: x} ... , {name: key_n, value: y}}) a un 
+             * Función que convierte un serializedArray ({{name: key_1, value: x} ... , {name: key_n, value: y}}) a un
              * object key:Value ({key_1: value, ... key_n: value});
              * return {object} objeto key:value
              */
@@ -164,7 +164,7 @@
 
             /**
              * Función que, dependiendo el vector de parámetro, creará dinámicamente el contenido
-             * de la tabla. Creará header, el cual contendrá el # de año proyectado y el body, 
+             * de la tabla. Creará header, el cual contendrá el # de año proyectado y el body,
              * el cual tendrá el valor calculado
              * param {array} data : vector con datos calculados
              * return {html} html que contendrá la tabla
@@ -185,7 +185,7 @@
 
             /**
              * Función que, dependiendo el vector de parámetro, creará dinámicamente el contenido
-             * de la tabla proyectada. Creará header, el cual contendrá el # de año proyectado y el body, 
+             * de la tabla proyectada. Creará header, el cual contendrá el # de año proyectado y el body,
              * el cual tendrá el valor calculado
              * param {array} data : vector con datos calculados
              * return {html} html que contendrá la tabla
@@ -203,7 +203,7 @@
                     actYear = data[i][0];
                     if (actData[actYear] == null) {
                         actData[actYear] = [];
-                    } 
+                    }
                     actData[actYear].push(data[i][1]);
                 }
                 actData.forEach(function (element, index, array) {
@@ -270,7 +270,7 @@
             }
 
             /**
-             * Método que reinicia el estado de las tabs, dejando únicamente como activa la de "Carbono" 
+             * Método que reinicia el estado de las tabs, dejando únicamente como activa la de "Carbono"
              */
             function resetTabs() {
                 $('#nav-carbono').parent().addClass('active');
@@ -321,7 +321,7 @@
                     $('#checkRaleo').prop('disabled', true);
                     $('#lblCheckRaleo').css('color', "#dddddd");
                 }
-                
+
             });
 
             // Cada vez que cambia checkbox, mostrará/ocultará panel de raleo
@@ -406,7 +406,7 @@
 
             /**
              * Submit del form de cálculo actual.
-             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego 
+             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego
              * mostrarlo en el panel de resultado
              */
             $('#formCalculoActual').submit(function (event) {
@@ -415,7 +415,7 @@
                 var postURL = '@Url.Action("calculoActual", "Calculator")';
                 $.ajax({
                     url: postURL,
-                    method: "POST", 
+                    method: "POST",
                     data: formData,
                     success: function (data) {
                         var status = data.status;
@@ -433,7 +433,7 @@
 
             /**
              * Submit del form de cálculo proyectado.
-             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego 
+             * Se hace Submit de la form via AJAX, y así obtener el resultado y luego
              * mostrarlo en el panel de resultado
              */
             $('#formCalculoProyectado').submit(function (event) {
@@ -548,7 +548,7 @@
                 </div>
                 <div class="panel-body">
                     @using (Html.BeginForm("calculoActual", "Calculator", FormMethod.Post, new { id = "formCalculoActual" }))
-            {
+    {
                 <div class="row">
                     <div class="col-md-3">
                         <label for="sel_especie">Especie</label>
@@ -562,12 +562,12 @@
                     </div>
                     <div class="col-md-3">
                         <label for="#txtDAP">DAP (cm)</label>
-                        <input id="txtDAP" name="dap" type="number" class="form-control big-input-size" placeholder="15 cm" min="0" step="any" autocomplete="off" 
+                        <input id="txtDAP" name="dap" type="number" class="form-control big-input-size" placeholder="15 cm" min="0" step="any" autocomplete="off"
                                oninvalid="this.setCustomValidity('Ingresar un DAP válido')" oninput="setCustomValidity('')" required>
                     </div>
                     <div class="col-md-3">
                         <label for="txtNumero">Número de árboles por hectárea</label>
-                        <input id="txtNumero" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" step="1" autocomplete="off" 
+                        <input id="txtNumero" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" step="1" autocomplete="off"
                                oninvalid="this.setCustomValidity('Ingresar un número válido')" oninput="setCustomValidity('')" required>
                     </div>
                     <div class="col-md-3">
@@ -581,7 +581,13 @@
                     <button type="submit" class="btn btn-primary">Calcular</button>
                     <button id="btnResetFormActual" type="reset" class="btn btn-danger">Reiniciar</button>
                 </div>
-    }
+}
+                    @using (Html.BeginForm("export", "Calculator", FormMethod.Post, new { id = "formExport" }))
+    {
+                <div class="row calcular-button">
+                    <button type="submit" class="btn btn-success">Exportar</button>
+                </div>
+}
                 </div>
             </div>
             <!-- /Ingresos -->
