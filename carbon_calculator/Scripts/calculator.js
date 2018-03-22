@@ -522,11 +522,6 @@ $(document).ready(function () {
 
             // Verifica que la suma de raleos esté correcta
             if (sumaRaleo <= SUMA_RALEOS) {
-
-                // Cantidad de árboles será igual a # árboles por hectarea * cantidad de hectareas
-                let contHectarea = formData['contHectarea'];
-                formData['numArboles'] = parseFloat(formData['numArboles']) * (contHectarea == '' ? 1 : contHectarea);
-
                 $.ajax({
                     url: urlProyectado,
                     method: "POST",

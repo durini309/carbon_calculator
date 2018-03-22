@@ -282,7 +282,7 @@ namespace carbon_calculator.Controllers
         }
 
         [HttpPost]
-        public ActionResult calculoProyectado(string especie, string indice_sitio, string ms, int numArboles, string raleo)
+        public ActionResult calculoProyectado(string especie, string indice_sitio, string ms, int numArboles, int contHectarea, string raleo)
         {
             /* Datos en sesion para exportar */
             System.Web.HttpContext.Current.Session["especie"] = especie;
