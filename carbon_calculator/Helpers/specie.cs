@@ -162,7 +162,7 @@ namespace carbon_calculator.Helpers
                     this.coefs_height[0] = -5.886381;
                     this.coefs_dap = new double[] { 3.041145, -8.076789, -0.014162, -0.000069 };
                     this.coefs_area = new double[] { 2.462079, -17.066455, -0.019585, 0.00093 };
-                    this.coefs_volumen = new double[] { 4.147779, -16.451739, -0.039504, 0.039504 };
+                    this.coefs_volumen = new double[] { 4.147779, -16.451739, -0.039504, 0.000229 };
 
                     this.coef_forma = 0.5;
                     this.limit_year = 16;
@@ -376,7 +376,7 @@ namespace carbon_calculator.Helpers
                     this.materia_seca = 0.5;
                     this.setGroundIndex("Pésimo", 9.71);
                     this.setGroundIndex("Medio", 13.45);
-                    this.setGroundIndex("Excelente", 16.25);
+                    this.setGroundIndex("Excelente", 16.01);
                     break;
 
                 case "Palo de Sangre":
@@ -447,14 +447,14 @@ namespace carbon_calculator.Helpers
                     this.coefs_dap[0] = 1.663888;
                     this.coefs_dap[1] = -2.480653;
                     this.coefs_dap[2] = 0.089199;
-                    this.coefs_dap[3] = 0.000146;
+                    this.coefs_dap[3] = -0.000146;
                     /* Asignacion de coeficientes de Area basal */
                     this.coefs_area[0] = -0.668643;
                     this.coefs_area[1] = -4.714003;
                     this.coefs_area[2] = 0.181244;
                     this.coefs_area[3] = 0.00101;
                     /* Asignacion de coeficientes de volumen */
-                    this.coefs_volumen[0] = 0.117827;
+                    this.coefs_volumen[0] = 0.117821;
                     this.coefs_volumen[1] = -8.184507;
                     this.coefs_volumen[2] = 0.271737;
                     this.coefs_volumen[3] = 0.000896;
@@ -495,7 +495,7 @@ namespace carbon_calculator.Helpers
                     this.coefs_dap[0] = 2.293225;
                     this.coefs_dap[1] = -4.118555;
                     this.coefs_dap[2] = 0.052407;
-                    this.coefs_dap[3] = 0.000131;
+                    this.coefs_dap[3] = -0.000131;
                     /* Asignacion de coeficientes de Area basal */
                     this.coefs_area[0] = 0.613447;
                     this.coefs_area[1] = -7.899548;
@@ -519,14 +519,14 @@ namespace carbon_calculator.Helpers
                 case "Pukté":
                     this.fancy_name = "Terminalia buceras";
                     this.coefs_height[0] = -1.741207;
-                    this.coefs_dap = new double[] { 3.257189, -3.956527, -0.009321, 0 };
+                    this.coefs_dap = new double[] { 3.257189, -3.956527, 0.009321, 0 };
                     this.coefs_area = new double[] { 3.695791, -7.913055, -0.018641, 0 };
                     this.coefs_volumen = new double[] { 4.588308, -10.377622, 0.049617, 0 };
 
                     this.coef_forma = 0.5;
                     this.limit_year = 16;
                     this.materia_seca = 0.5;
-                    this.setGroundIndex("Único", 3.83);
+                    this.setGroundIndex("Único", 9.92);
                     break;
 
                 case "Guayabon":
