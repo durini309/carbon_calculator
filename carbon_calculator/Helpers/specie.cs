@@ -77,6 +77,7 @@ namespace carbon_calculator.Helpers
             switch (treeName)
             {
                 case "Pinabete":
+                    this.name += " (Pashaque, Abeto)";
                     this.fancy_name = "Abies guatemalensis Rehder";
                     this.coefs_height[0] = -20.378291;
                     this.coefs_dap = new double[] { 4.627246, -11.360686, -0.006167, -0.00133 };
@@ -90,6 +91,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Cedro Rosado":
+                    this.name += " (Cedro roso, Mundani)";
                     this.fancy_name = "Acrocarpus fraxinifolius Wight &Arn";
                     this.coefs_height[0] = -3.638221;
                     this.coefs_dap = new double[] { 2.805506, -2.624873, 0.029507, -0.000251 };
@@ -105,6 +107,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Aliso":
+                    this.name = treeName;
                     this.fancy_name = "Alnus jorullensis Kunth";
                     this.coefs_height[0] = -5.183772;
                     this.coefs_dap = new double[] { 3.479904, -5.100774, 0.005329, -0.000192 };
@@ -118,6 +121,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Nim":
+                    this.name += " (Neem)";
                     this.fancy_name = "Azadirachta indica A. Juss";
                     this.coefs_height[0] = -1.725435;
                     this.coefs_dap = new double[] { 1.567832, -2.675935, 0.100498, 0.000284 };
@@ -145,6 +149,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Santa María":
+                    this.name = treeName + " (Marío, leche)";
                     this.fancy_name = "Calophyllum brasiliense Cambess";
                     this.coefs_height[0] = -7.657288;
                     this.coefs_dap = new double[] { 3.861522, -7.008542, 0.027548, -0.001144 };
@@ -171,6 +176,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Cedro":
+                    this.name += " (Cedro rojo)";
                     this.fancy_name = "Cedrela odorata L.";
                     this.coefs_height[0] = -4.034014;
                     this.coefs_dap = new double[] { 2.334384, -4.530798, 0.145447, -0.001743 };
@@ -184,6 +190,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Cipres Común":
+                    this.name += " (Ciprés)";
                     this.fancy_name = "Cupressus lusitanica Mill.";
                     this.coefs_height[0] = -6.731967;
                     this.coefs_dap = new double[] { 2.707584, -5.677218, 0.067381, -0.000247 };
@@ -257,6 +264,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Pino Caribe":
+                    this.name += " (Pino de Petén)";
                     this.tree_code = "PINUCH";
                     this.name = treeName;
                     this.fancy_name = "Pinus Caribaea var. hondurensis (Sénécl.) W. H. Barret & Golfari";
@@ -321,6 +329,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Pino Ocote":
+                    this.name += " (Pino colorado)";
                     this.tree_code = "PINUOO";
                     this.name = treeName;
                     this.fancy_name = "Pinus sp Schiede";
@@ -365,6 +374,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Pino Triste":
+                    this.name += " (Pino blanco)";
                     this.fancy_name = "Pinus pseudostrobus Lindl";
                     this.coefs_height[0] = -11.729867;
                     this.coefs_dap = new double[] { 3.298035, -10.936875, 0.065073, -0.000083 };
@@ -380,6 +390,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Palo de Sangre":
+                    this.name += " (Sangre y cahué)";
                     this.fancy_name = "Pinus pseudostrobus Lindl";
                     this.coefs_height[0] = -8.864079;
                     this.coefs_dap = new double[] { 2.533776, -6.885158, 0.065936, -0.000115 };
@@ -421,6 +432,7 @@ namespace carbon_calculator.Helpers
                     break;
 
                 case "Caoba":
+                    this.name += " (Caoba del norte)";
                     this.fancy_name = "Swietenia macrophylla";
                     this.coefs_height[0] = -10.900122;
                     this.coefs_dap = new double[] { 2.630349, -10.089983, 0.075246, 0.000075 };

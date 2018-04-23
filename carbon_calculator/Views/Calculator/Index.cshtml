@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-md-3">
                             <label for="txtNumero" style="display: block;">
-                                # Árboles
+                                Densidad (No. árboles/ha)
                                 <img src="~/Content/images/help.png" class="icon-help pull-right" data-toggle="tooltip" data-placement="top"
                                      title="Cantidad de árboles a tomar en cuenta" />
                             </label>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="col-md-3">
                             <label for="txtAltura" style="display:block">
-                                Altura media (m)
+                                Altura total promedio (m)
                                 <img src="~/Content/images/help.png" class="icon-help pull-right" data-toggle="tooltip" data-placement="top"
                                      title="Altura promedio de los árboles" />
                             </label>
@@ -111,7 +111,7 @@
                                 </label>
                                 <select id="sel_especieP" name="especie" class="form-control big-input-size"></select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="sel_sitio" style="display: block">
                                     Índice de sitio
                                     <img src="~/Content/images/help.png" class="icon-help pull-right" data-toggle="tooltip" data-placement="top"
@@ -120,7 +120,7 @@
                                 <select id="sel_sitio" name="indice_sitio" class="form-control big-input-size"></select>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="txtYearsP" style="display:block">
                                     Años de proyección
                                     <img src="~/Content/images/help.png" class="icon-help pull-right" data-toggle="tooltip" data-placement="top"
@@ -130,19 +130,19 @@
                                        oninvalid="this.setCustomValidity('Ingresar cantidad de años válida')" oninput="setCustomValidity('')" required>
                             </div>
 
-                            <div class="col-md-3" style="display: flex;">
-                                <div style="width: 48%; margin-right: 10px;">
-                                    <label for="txtNum"> # Árboles </label>
+                            <div class="col-md-5" style="display: flex;">
+                                <div style="width: 50%; margin-right: 10px;">
+                                    <label for="txtNum"> Densidad (No. árboles/ha) </label>
                                     <input id="txtNum" name="numArboles" type="number" class="form-control big-input-size" placeholder="1111" min="0" autocomplete="off"
                                            oninvalid="this.setCustomValidity('Ingresar un número válido')" oninput="setCustomValidity('')" required>
                                 </div>
-                                <div style="width: 48%;">
+                                <div style="width: 50%;">
                                     <label for="txtHectareas" style="display:block;">
-                                        Hectareas
+                                        Área (Hectáreas)
                                         <img src="~/Content/images/help.png" class="icon-help pull-right" data-toggle="tooltip" data-placement="top"
                                              title="Cantidad de árboles por hectarea y número total de hectareas" />
                                     </label>
-                                    <input id="txtHectareas" name="contHectarea" type="number" class="form-control" placeholder="1" min="0" autocomplete="off"
+                                    <input id="txtHectareas" name="contHectarea" type="number" class="form-control big-input-size" placeholder="1" min="0" autocomplete="off"
                                            oninvalid="this.setCustomValidity('Ingresar un número válido')" oninput="setCustomValidity('')" required>
                                 </div>
                             </div>
